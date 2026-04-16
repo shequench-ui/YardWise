@@ -2,702 +2,1493 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NSWMA — National Solid Waste Management Authority</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YardWise AI — Yuh Yard, Yuh Rules</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0A2240;--navy-mid:#133A6B;--navy-light:#1E5090;
-  --green:#1B8C3D;--green-dark:#14692E;--green-light:#24B34E;
-  --blue-accent:#2196F3;--blue-light:#E3F2FD;
-  --gold:#F5A623;--gold-light:#FFF3DC;
-  --white:#FFFFFF;--off-white:#F5F6F8;--surface:#EDF0F5;
-  --surface-alt:#DDE3EB;
-  --text:#1A2332;--text-muted:#5A6A7E;--text-light:#8B99AB;
-  --danger:#D32F2F;--success:#2E7D32;
-  --radius:12px;--radius-sm:8px;
-  --shadow:0 1px 8px rgba(10,34,64,.08);
-  --shadow-lg:0 6px 24px rgba(10,34,64,.12);
-  --font:'Public Sans',sans-serif;
-  --font-display:'Merriweather',serif;
-  --nav-h:60px;--bottom-h:68px;
+:root {
+  --green-deep: #0B3D1F;
+  --green-mid: #146B35;
+  --green-light: #1E9B4B;
+  --green-glow: #22C55E;
+  --green-pale: #D1FAE5;
+  --gold: #F6B920;
+  --gold-warm: #FBBF24;
+  --gold-deep: #D97706;
+  --gold-pale: #FEF3C7;
+  --black: #0A0F0D;
+  --black-soft: #1A2520;
+  --white: #FAFDF8;
+  --white-warm: #F0F7ED;
+  --gray-100: #E8F0E5;
+  --gray-200: #D1E0CD;
+  --gray-300: #A3B89E;
+  --gray-400: #6B8066;
+  --gray-500: #4A5E46;
+  --red: #DC2626;
+  --red-soft: #FEE2E2;
+  --blue: #2563EB;
+  --blue-soft: #DBEAFE;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,61,31,0.08);
+  --shadow-md: 0 4px 14px rgba(11,61,31,0.1);
+  --shadow-lg: 0 8px 30px rgba(11,61,31,0.14);
+  --shadow-glow: 0 0 20px rgba(34,197,94,0.15);
+  --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  --nav-height: 72px;
+  --header-height: 60px;
 }
-html{font-size:16px;-webkit-text-size-adjust:100%}
-body{font-family:var(--font);background:var(--off-white);color:var(--text);min-height:100dvh;overflow-x:hidden}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
-input,textarea,select{font-family:inherit;border:none;outline:none}
-.top-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:linear-gradient(180deg,var(--navy) 0%,var(--navy-mid) 100%);z-index:100;display:flex;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 12px rgba(10,34,64,.25)}
-.nswma-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nswma-logo svg{width:38px;height:38px;flex-shrink:0}
-.nswma-logo-text{color:#fff;line-height:1.15}
-.nswma-logo-text .title{font-size:.72rem;font-weight:700;letter-spacing:.3px;display:block}
-.nswma-logo-text .sub{font-size:.55rem;font-weight:400;opacity:.7;display:block;letter-spacing:.2px}
-.nav-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-.nav-btn{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;font-size:14px;transition:.2s;position:relative}
-.nav-btn:hover{background:rgba(255,255,255,.2)}
-.notif-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--danger);border-radius:50%;border:1.5px solid var(--navy)}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bottom-h);background:var(--white);border-top:1px solid rgba(10,34,64,.08);z-index:100;display:flex;align-items:stretch;justify-content:space-around;padding:0 4px;padding-bottom:env(safe-area-inset-bottom,0)}
-.bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 10px;font-size:.6rem;font-weight:500;color:var(--text-light);transition:.2s;min-width:56px;border-bottom:2px solid transparent}
-.bottom-nav button i{font-size:18px;transition:.15s}
-.bottom-nav button.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:700}
-.bottom-nav .cta-btn{position:relative;top:-6px;background:var(--green);color:#fff!important;border-radius:14px;padding:8px 14px!important;box-shadow:0 4px 14px rgba(27,140,61,.35);border-bottom:none!important;min-width:64px}
-.bottom-nav .cta-btn i{font-size:17px}
-.bottom-nav .cta-btn.active{background:var(--green-dark)}
-.main{padding-top:calc(var(--nav-h) + 10px);padding-bottom:calc(var(--bottom-h) + 14px);min-height:100dvh}
-.page{display:none;padding:0 16px;animation:fadeUp .3s ease}
-.page.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.card{background:var(--white);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:12px}
-.card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.card-head .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
-.card-head h3{font-size:.88rem;font-weight:700}
-.card-head p{font-size:.72rem;color:var(--text-muted);margin-top:1px}
-.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 45%,var(--navy-light) 100%);border-radius:var(--radius);padding:24px 20px;color:#fff;margin-bottom:14px;position:relative;overflow:hidden}
-.hero::after{content:'';position:absolute;top:-30%;right:-15%;width:220px;height:220px;background:radial-gradient(circle,rgba(33,150,243,.15) 0%,transparent 70%);border-radius:50%}
-.hero .badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:20px;font-size:.65rem;font-weight:500;margin-bottom:10px;position:relative}
-.hero h1{font-family:var(--font-display);font-size:1.45rem;line-height:1.25;margin-bottom:6px;position:relative}
-.hero p{font-size:.82rem;opacity:.8;position:relative;max-width:300px;line-height:1.5}
-.alert-strip{background:var(--gold-light);border:1px solid rgba(245,166,35,.25);border-left:3px solid var(--gold);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;font-size:.78rem;line-height:1.5}
-.alert-strip i{color:var(--gold);font-size:16px;margin-top:2px;flex-shrink:0}
-.alert-strip strong{display:block;font-size:.82rem;margin-bottom:2px}
-.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-.qk{background:var(--white);border-radius:var(--radius);padding:14px 6px;text-align:center;box-shadow:var(--shadow);transition:.15s}
-.qk:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.qk .qk-ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;margin:0 auto 6px;font-size:16px}
-.qk span{font-size:.65rem;font-weight:600;color:var(--text);display:block;line-height:1.3}
-.mini-map{height:160px;background:linear-gradient(135deg,#c8e6c9,#a5d6a7,#81c784);border-radius:var(--radius-sm);position:relative;overflow:hidden;margin-bottom:12px}
-.road{position:absolute;background:rgba(0,0,0,.08);border-radius:2px}
-.road.h{height:2px}.road.v{width:2px}
-.dot{position:absolute;width:12px;height:12px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.2)}
-.dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1.5px solid;opacity:.25;animation:ring 2s infinite}
-@keyframes ring{0%{transform:scale(.8);opacity:.4}100%{transform:scale(1.7);opacity:0}}
-.dot.on{background:var(--green);color:var(--green)}.dot.slow{background:var(--gold);color:var(--gold)}
-.house{position:absolute;font-size:10px;color:rgba(0,0,0,.12)}
-.truck-stats{display:flex;gap:14px}
-.truck-stats .ts{flex:1}
-.ts .lb{font-size:.6rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
-.ts .vl{font-size:1rem;font-weight:700;color:var(--navy)}
-.pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.pills::-webkit-scrollbar{display:none}
-.pill{padding:7px 14px;border-radius:18px;font-size:.72rem;font-weight:500;white-space:nowrap;background:var(--surface);color:var(--text-muted);transition:.15s;flex-shrink:0}
-.pill.active{background:var(--navy);color:#fff}
-.pill:hover:not(.active){background:var(--surface-alt)}
-.sched-row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--surface)}
-.sched-row:last-child{border:none}
-.day-box{width:44px;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:.72rem}
-.day-box .dn{font-size:1rem;line-height:1}
-.day-box.today{background:var(--navy);color:#fff}
-.day-box.other{background:var(--surface);color:var(--text)}
-.sched-info h4{font-size:.82rem;font-weight:600;margin-bottom:2px}
-.sched-info p{font-size:.72rem;color:var(--text-muted);line-height:1.5}
-.time-chip{display:inline-flex;align-items:center;gap:3px;background:var(--surface);padding:2px 7px;border-radius:5px;font-size:.65rem;font-weight:500;color:var(--text-muted);margin-top:4px}
-.big-map{height:300px;background:linear-gradient(180deg,#c8e6c9 0%,#a5d6a7 50%,#81c784 100%);border-radius:var(--radius);position:relative;overflow:hidden;margin-bottom:14px}
-.map-truck{position:absolute;font-size:20px;transition:all 3s ease-in-out;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
-.tl-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--white);border-radius:var(--radius-sm);margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.st-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.st-dot.on{background:var(--success)}.st-dot.slow{background:var(--gold)}.st-dot.off{background:var(--text-light)}
-.tl-item .inf{flex:1}
-.tl-item .inf h4{font-size:.82rem;font-weight:600}
-.tl-item .inf p{font-size:.68rem;color:var(--text-muted)}
-.tl-item .eta{text-align:right}
-.tl-item .eta .t{font-size:.95rem;font-weight:700;color:var(--navy)}
-.tl-item .eta .l{font-size:.6rem;color:var(--text-muted)}
-.rtype-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.rtype{background:var(--white);border-radius:var(--radius);padding:18px 14px;text-align:center;box-shadow:var(--shadow);border:2px solid transparent;transition:.15s}
-.rtype.sel{border-color:var(--navy);background:var(--blue-light)}
-.rtype i{font-size:24px;margin-bottom:6px;display:block}
-.rtype h4{font-size:.78rem;font-weight:600;margin-bottom:2px}
-.rtype p{font-size:.62rem;color:var(--text-muted)}
-.fg{margin-bottom:14px}
-.fg label{display:block;font-size:.75rem;font-weight:600;margin-bottom:5px;color:var(--text)}
-.fi{width:100%;padding:11px 13px;background:var(--surface);border-radius:var(--radius-sm);font-size:.85rem;color:var(--text);border:2px solid transparent;transition:.15s}
-.fi:focus{border-color:var(--navy);background:var(--white)}
-.fi::placeholder{color:var(--text-light)}
-textarea.fi{resize:vertical;min-height:90px}
-select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235A6A7E' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
-.upload-box{border:2px dashed var(--surface-alt);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:.15s;background:var(--white)}
-.upload-box:hover{border-color:var(--navy);background:var(--blue-light)}
-.upload-box i{font-size:24px;color:var(--text-light);margin-bottom:6px}
-.upload-box p{font-size:.78rem;color:var(--text-muted)}
-.upload-box span{font-size:.65rem;color:var(--text-light);display:block;margin-top:3px}
-.btn{padding:13px 22px;border-radius:var(--radius-sm);font-size:.85rem;font-weight:600;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
-.btn-navy{background:var(--navy);color:#fff;box-shadow:0 3px 12px rgba(10,34,64,.25)}
-.btn-navy:hover{background:var(--navy-mid)}
-.btn-green{background:var(--green);color:#fff;box-shadow:0 3px 12px rgba(27,140,61,.25)}
-.pay-hero{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--radius);padding:22px;color:#fff;margin-bottom:14px;text-align:center}
-.pay-hero .amt{font-family:var(--font-display);font-size:2.2rem;font-weight:900;margin:6px 0}
-.pay-hero .lb{font-size:.7rem;opacity:.6;text-transform:uppercase;letter-spacing:1px}
-.pay-hero .acct{font-size:.78rem;opacity:.8;margin-top:4px}
-.pm-row{display:flex;gap:8px;margin-bottom:14px}
-.pm-row button{flex:1;padding:12px;background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.7rem;font-weight:500;color:var(--text-muted);border:2px solid transparent;transition:.15s}
-.pm-row button i{font-size:20px}
-.pm-row button.active{border-color:var(--navy);color:var(--navy)}
-.chat-page{display:none;flex-direction:column;height:calc(100dvh - var(--nav-h) - var(--bottom-h));padding:0}
-.chat-page.active{display:flex}
-.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.msg{max-width:85%;padding:12px 14px;border-radius:16px;font-size:.83rem;line-height:1.55;animation:fadeUp .25s ease}
-.msg.bot{background:var(--white);border-bottom-left-radius:4px;align-self:flex-start;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.msg.user{background:var(--navy);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
-.msg .bh{display:flex;align-items:center;gap:5px;margin-bottom:5px;font-size:.65rem;color:var(--text-muted);font-weight:600}
-.msg .bh i{color:var(--green)}
-.chat-bar{padding:10px 14px;background:var(--white);border-top:1px solid var(--surface);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.chat-bar input{flex:1;padding:11px 14px;background:var(--surface);border-radius:22px;font-size:.85rem;min-width:0}
-.chat-bar .send{width:42px;height:42px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:15px;transition:.15s;flex-shrink:0}
-.chat-bar .send:hover{background:var(--navy-mid)}
-.chat-bar .send:disabled{opacity:.35;cursor:not-allowed}
-.chat-bar .img-btn{width:42px;height:42px;border-radius:50%;background:var(--surface);color:var(--text-muted);display:grid;place-items:center;font-size:15px;transition:.15s;flex-shrink:0}
-.chat-bar .img-btn:hover{background:var(--blue-light);color:var(--navy)}
-.chat-preview{width:100%;display:none;padding:0 0 6px}
-.chat-preview .prev-wrap{display:inline-flex;align-items:center;gap:8px;background:var(--surface);padding:6px 10px;border-radius:var(--radius-sm);max-width:100%}
-.chat-preview img{width:48px;height:48px;border-radius:6px;object-fit:cover}
-.chat-preview .prev-name{font-size:.72rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}
-.chat-preview .prev-rm{color:var(--danger);font-size:14px;cursor:pointer;padding:4px}
-.powered-by{text-align:center;padding:4px 14px;font-size:.58rem;color:var(--text-light);background:var(--white);border-top:1px solid var(--surface)}
-.powered-by i{margin:0 2px}
-.msg .img-analysis{margin-top:8px;padding:10px;background:var(--surface);border-radius:var(--radius-sm);font-size:.75rem;color:var(--text-muted)}
-.msg .img-analysis strong{color:var(--navy);font-size:.7rem;display:block;margin-bottom:3px}
-.msg .user-img{max-width:180px;border-radius:var(--radius-sm);margin-bottom:6px}
-.report-analysis{margin-top:8px;padding:10px;background:var(--blue-light);border-radius:var(--radius-sm);border-left:3px solid var(--navy);font-size:.75rem;color:var(--text);line-height:1.5;display:none}
-.report-analysis strong{display:block;margin-bottom:3px;font-size:.78rem}
-.typing{display:flex;gap:4px;padding:6px 0}
-.typing span{width:5px;height:5px;border-radius:50%;background:var(--text-light);animation:bounce .6s infinite alternate}
-.typing span:nth-child(2){animation-delay:.2s}
-.typing span:nth-child(3){animation-delay:.4s}
-@keyframes bounce{to{transform:translateY(-5px);opacity:.3}}
-.suggestions{display:flex;flex-wrap:wrap;gap:5px;padding:6px 14px}
-.sug{padding:7px 12px;background:var(--surface);border-radius:18px;font-size:.72rem;color:var(--text-muted);font-weight:500;transition:.15s;white-space:nowrap}
-.sug:hover{background:var(--navy);color:#fff}
-.toast{position:fixed;top:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%) translateY(-120%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:500;z-index:200;display:flex;align-items:center;gap:7px;box-shadow:var(--shadow-lg);transition:.35s cubic-bezier(.34,1.56,.64,1)}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.modal-bg{position:fixed;inset:0;background:rgba(10,34,64,.55);z-index:300;display:none;place-items:center;animation:fadeIn .2s}
-.modal-bg.show{display:grid}
-.modal{background:var(--white);border-radius:var(--radius);padding:28px 22px;text-align:center;max-width:320px;width:90%;animation:fadeUp .3s ease}
-.modal .chk{width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:24px;margin:0 auto 14px}
-.modal h3{font-size:1rem;font-weight:700;margin-bottom:4px}
-.modal p{font-size:.78rem;color:var(--text-muted);margin-bottom:18px;line-height:1.5}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@media(min-width:600px){.main{max-width:460px;margin:0 auto}.bottom-nav{max-width:460px;left:50%;transform:translateX(-50%)}}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { 
+  height:100%; width:100%; overflow:hidden;
+  font-family:'DM Sans',sans-serif; background:var(--white); color:var(--black);
+}
+h1,h2,h3,h4,h5 { font-family:'Bricolage Grotesque',sans-serif; font-weight:700; }
+button { font-family:'DM Sans',sans-serif; cursor:pointer; border:none; background:none; }
+input, textarea, select { font-family:'DM Sans',sans-serif; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--gray-200); border-radius:4px; }
+
+/* ============ APP SHELL ============ */
+#app { height:100%; display:flex; flex-direction:column; position:relative; }
+#splash {
+  position:fixed; inset:0; z-index:9999;
+  background: linear-gradient(145deg, var(--green-deep) 0%, var(--black) 50%, var(--green-deep) 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#splash.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+#splash .logo-mark {
+  width:90px; height:90px; border-radius:24px;
+  background: linear-gradient(135deg, var(--green-light), var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  font-size:40px; color:var(--white); margin-bottom:24px;
+  animation: pulseGlow 2s ease-in-out infinite;
+  box-shadow: 0 0 40px rgba(34,197,94,0.3);
+}
+@keyframes pulseGlow {
+  0%,100% { box-shadow: 0 0 40px rgba(34,197,94,0.3); }
+  50% { box-shadow: 0 0 60px rgba(34,197,94,0.5), 0 0 100px rgba(246,185,32,0.2); }
+}
+#splash h1 { font-size:32px; color:var(--white); letter-spacing:-0.5px; }
+#splash h1 span { color:var(--gold); }
+#splash p { color:var(--gray-300); margin-top:8px; font-size:14px; letter-spacing:1px; }
+#splash .loader {
+  margin-top:40px; width:48px; height:48px;
+  border:3px solid rgba(255,255,255,0.1);
+  border-top-color:var(--gold);
+  border-radius:50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ============ HEADER ============ */
+.app-header {
+  height:var(--header-height); min-height:var(--header-height);
+  background:var(--white); border-bottom:1px solid var(--gray-100);
+  display:flex; align-items:center; padding:0 16px; gap:12px;
+  position:relative; z-index:100;
+}
+.app-header .logo-sm {
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg, var(--green-mid), var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  color:var(--white); font-size:18px; flex-shrink:0;
+}
+.app-header .header-title { font-family:'Bricolage Grotesque',sans-serif; font-size:18px; font-weight:700; flex:1; }
+.app-header .header-title span { color:var(--green-mid); }
+.app-header .header-actions { display:flex; gap:8px; }
+.header-btn {
+  width:36px; height:36px; border-radius:10px;
+  background:var(--gray-100); display:flex; align-items:center; justify-content:center;
+  color:var(--gray-500); font-size:15px; transition:var(--transition);
+}
+.header-btn:hover { background:var(--green-pale); color:var(--green-mid); }
+
+/* ============ MAIN CONTENT ============ */
+.main-content {
+  flex:1; overflow:hidden; position:relative;
+}
+.page {
+  position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
+  padding-bottom:calc(var(--nav-height) + 20px);
+  opacity:0; visibility:hidden; transform:translateY(8px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+.page.active { opacity:1; visibility:visible; transform:translateY(0); }
+
+/* ============ BOTTOM NAV ============ */
+.bottom-nav {
+  height:var(--nav-height); min-height:var(--nav-height);
+  background:var(--white); border-top:1px solid var(--gray-100);
+  display:flex; align-items:center; justify-content:space-around;
+  padding:0 4px; padding-bottom:env(safe-area-inset-bottom,0);
+  position:relative; z-index:100;
+  box-shadow: 0 -2px 20px rgba(0,0,0,0.04);
+}
+.nav-item {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:6px 8px; border-radius:var(--radius-md);
+  transition:var(--transition); min-width:56px; position:relative;
+}
+.nav-item i { font-size:20px; color:var(--gray-400); transition:var(--transition); }
+.nav-item span { font-size:10px; font-weight:500; color:var(--gray-400); transition:var(--transition); }
+.nav-item.active i { color:var(--green-mid); }
+.nav-item.active span { color:var(--green-mid); font-weight:600; }
+.nav-item.active::before {
+  content:''; position:absolute; top:-1px; left:50%; transform:translateX(-50%);
+  width:24px; height:3px; border-radius:0 0 4px 4px;
+  background:var(--green-mid);
+}
+.nav-item:hover i { color:var(--green-light); }
+.nav-badge {
+  position:absolute; top:2px; right:8px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--red); border:2px solid var(--white);
+}
+
+/* ============ YARD CHAT PAGE ============ */
+#chatPage { display:flex; flex-direction:column; padding-bottom:0 !important; }
+.chat-mode-bar {
+  display:flex; gap:8px; padding:12px 16px;
+  background:var(--white-warm); border-bottom:1px solid var(--gray-100);
+}
+.chat-mode-btn {
+  padding:7px 16px; border-radius:var(--radius-full);
+  font-size:13px; font-weight:500; transition:var(--transition);
+  background:var(--white); border:1px solid var(--gray-200); color:var(--gray-500);
+}
+.chat-mode-btn.active {
+  background:var(--green-deep); color:var(--gold); border-color:var(--green-deep);
+}
+.chat-mode-btn i { margin-right:6px; }
+.chat-messages {
+  flex:1; overflow-y:auto; padding:16px;
+  display:flex; flex-direction:column; gap:12px;
+}
+.chat-msg {
+  max-width:85%; padding:12px 16px; border-radius:var(--radius-lg);
+  font-size:14px; line-height:1.55; animation: msgIn 0.3s ease;
+  word-wrap:break-word;
+}
+@keyframes msgIn { from { opacity:0; transform:translateY(10px); } }
+.chat-msg.bot {
+  align-self:flex-start;
+  background:var(--white-warm); border:1px solid var(--gray-100);
+  border-bottom-left-radius:6px;
+}
+.chat-msg.bot .msg-label {
+  font-size:11px; font-weight:600; color:var(--green-mid);
+  margin-bottom:4px; display:flex; align-items:center; gap:6px;
+}
+.chat-msg.bot .msg-label i { font-size:13px; }
+.chat-msg.user {
+  align-self:flex-end;
+  background:var(--green-deep); color:var(--white);
+  border-bottom-right-radius:6px;
+}
+.chat-msg.bot .citation {
+  display:inline-block; margin-top:8px; padding:4px 10px;
+  background:var(--green-pale); border-radius:var(--radius-sm);
+  font-size:11px; color:var(--green-mid); text-decoration:none;
+}
+.chat-msg.typing .dots { display:inline-flex; gap:4px; }
+.chat-msg.typing .dots span {
+  width:7px; height:7px; border-radius:50%; background:var(--gray-300);
+  animation: blink 1.4s infinite;
+}
+.chat-msg.typing .dots span:nth-child(2) { animation-delay:0.2s; }
+.chat-msg.typing .dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes blink { 0%,80%,100%{opacity:0.3} 40%{opacity:1} }
+
+.chat-input-bar {
+  padding:10px 12px; background:var(--white);
+  border-top:1px solid var(--gray-100);
+  display:flex; gap:8px; align-items:flex-end;
+  padding-bottom:calc(var(--nav-height) + 10px);
+}
+.chat-input-bar .input-wrap {
+  flex:1; display:flex; align-items:flex-end;
+  background:var(--gray-100); border-radius:var(--radius-lg);
+  padding:4px; border:2px solid transparent; transition:var(--transition);
+}
+.chat-input-bar .input-wrap:focus-within { border-color:var(--green-light); background:var(--white); }
+.chat-input-bar textarea {
+  flex:1; border:none; background:none; outline:none;
+  padding:8px 12px; font-size:14px; resize:none;
+  max-height:120px; min-height:40px; line-height:1.4;
+}
+.chat-input-bar .snap-btn, .chat-input-bar .voice-btn {
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gray-400); font-size:16px; transition:var(--transition); flex-shrink:0;
+}
+.chat-input-bar .snap-btn:hover, .chat-input-bar .voice-btn:hover { color:var(--green-mid); }
+.chat-send-btn {
+  width:42px; height:42px; border-radius:50%;
+  background:var(--green-mid); color:var(--white);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; transition:var(--transition); flex-shrink:0;
+}
+.chat-send-btn:hover { background:var(--green-light); transform:scale(1.05); }
+.chat-send-btn:disabled { opacity:0.4; }
+
+/* Quick Action Chips */
+.quick-actions {
+  display:flex; gap:8px; padding:8px 16px; overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.quick-actions::-webkit-scrollbar { display:none; }
+.quick-chip {
+  padding:8px 14px; border-radius:var(--radius-full);
+  background:var(--green-pale); color:var(--green-deep);
+  font-size:12px; font-weight:500; white-space:nowrap;
+  border:1px solid transparent; transition:var(--transition); flex-shrink:0;
+}
+.quick-chip:hover { border-color:var(--green-mid); background:var(--white); }
+.quick-chip i { margin-right:5px; }
+
+/* ============ MY YARD PAGE ============ */
+.yard-hero {
+  background:linear-gradient(135deg, var(--green-deep) 0%, var(--black-soft) 100%);
+  padding:24px 20px; color:var(--white); position:relative; overflow:hidden;
+}
+.yard-hero::after {
+  content:''; position:absolute; top:-40%; right:-20%;
+  width:300px; height:300px; border-radius:50%;
+  background:radial-gradient(circle, rgba(246,185,32,0.12) 0%, transparent 70%);
+}
+.yard-profile-row {
+  display:flex; align-items:center; gap:14px; position:relative; z-index:1;
+}
+.yard-avatar {
+  width:60px; height:60px; border-radius:var(--radius-lg);
+  background:linear-gradient(135deg, var(--green-light), var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; color:var(--white); flex-shrink:0;
+  border:3px solid rgba(255,255,255,0.2);
+}
+.yard-profile-info h2 { font-size:20px; margin-bottom:2px; }
+.yard-profile-info p { font-size:13px; color:var(--gray-300); }
+.yard-score-card {
+  margin-top:16px; padding:14px 18px;
+  background:rgba(255,255,255,0.08); border-radius:var(--radius-md);
+  border:1px solid rgba(255,255,255,0.1); position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.yard-score-card .score-label { font-size:12px; color:var(--gray-300); }
+.yard-score-card .score-val { font-size:28px; font-weight:800; color:var(--gold); font-family:'Bricolage Grotesque',sans-serif; }
+.yard-score-card .score-bar {
+  width:120px; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;
+}
+.yard-score-card .score-fill { height:100%; border-radius:4px; background:linear-gradient(90deg, var(--green-light), var(--gold)); transition: width 1s ease; }
+
+.yard-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  padding:16px;
+}
+.yard-card {
+  background:var(--white); border:1px solid var(--gray-100);
+  border-radius:var(--radius-md); padding:16px;
+  transition:var(--transition); cursor:pointer;
+}
+.yard-card:hover { border-color:var(--green-light); box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.yard-card .card-icon {
+  width:40px; height:40px; border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; margin-bottom:10px;
+}
+.yard-card .card-icon.green { background:var(--green-pale); color:var(--green-mid); }
+.yard-card .card-icon.gold { background:var(--gold-pale); color:var(--gold-deep); }
+.yard-card .card-icon.blue { background:var(--blue-soft); color:var(--blue); }
+.yard-card .card-icon.red { background:var(--red-soft); color:var(--red); }
+.yard-card h4 { font-size:14px; margin-bottom:3px; }
+.yard-card p { font-size:12px; color:var(--gray-400); line-height:1.4; }
+
+.section-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 16px 10px;
+}
+.section-header h3 { font-size:17px; }
+.section-header .see-all { font-size:13px; color:var(--green-mid); font-weight:500; }
+
+/* Produce cards */
+.produce-scroll {
+  display:flex; gap:12px; padding:0 16px 16px; overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.produce-scroll::-webkit-scrollbar { display:none; }
+.produce-card {
+  min-width:130px; background:var(--white); border:1px solid var(--gray-100);
+  border-radius:var(--radius-md); padding:14px; text-align:center;
+  flex-shrink:0; transition:var(--transition);
+}
+.produce-card:hover { border-color:var(--green-light); }
+.produce-card .produce-icon { font-size:32px; margin-bottom:8px; }
+.produce-card h5 { font-size:13px; margin-bottom:2px; }
+.produce-card span { font-size:11px; color:var(--gray-400); }
+
+/* ============ COMMUNITY HUB ============ */
+.community-banner {
+  background:linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+  padding:24px 20px; color:var(--black); position:relative; overflow:hidden;
+}
+.community-banner::before {
+  content:''; position:absolute; bottom:-30%; right:-10%;
+  width:200px; height:200px; border-radius:50%;
+  background:rgba(255,255,255,0.15);
+}
+.community-banner h2 { font-size:22px; margin-bottom:4px; position:relative; z-index:1; }
+.community-banner p { font-size:13px; opacity:0.8; position:relative; z-index:1; }
+
+.community-tabs {
+  display:flex; gap:0; padding:0 16px; margin-top:-1px;
+  border-bottom:1px solid var(--gray-100); background:var(--white);
+  overflow-x:auto;
+}
+.community-tabs::-webkit-scrollbar { display:none; }
+.comm-tab {
+  padding:12px 16px; font-size:13px; font-weight:500;
+  color:var(--gray-400); white-space:nowrap; position:relative;
+  transition:var(--transition);
+}
+.comm-tab.active { color:var(--green-mid); font-weight:600; }
+.comm-tab.active::after {
+  content:''; position:absolute; bottom:-1px; left:16px; right:16px;
+  height:2px; background:var(--green-mid); border-radius:2px;
+}
+
+.forum-post {
+  padding:16px; border-bottom:1px solid var(--gray-100);
+  transition:var(--transition); cursor:pointer;
+}
+.forum-post:hover { background:var(--white-warm); }
+.forum-post .post-header {
+  display:flex; align-items:center; gap:10px; margin-bottom:8px;
+}
+.forum-post .post-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:var(--green-pale); color:var(--green-mid);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:600; flex-shrink:0;
+}
+.forum-post .post-meta { flex:1; }
+.forum-post .post-meta strong { font-size:13px; }
+.forum-post .post-meta span { font-size:11px; color:var(--gray-400); display:block; }
+.forum-post .post-body { font-size:14px; line-height:1.5; color:var(--gray-500); margin-bottom:10px; }
+.forum-post .post-actions { display:flex; gap:16px; }
+.forum-post .post-actions button {
+  font-size:12px; color:var(--gray-400); display:flex; align-items:center; gap:5px;
+  transition:var(--transition);
+}
+.forum-post .post-actions button:hover { color:var(--green-mid); }
+
+/* ============ YARD MARKET ============ */
+.market-hero {
+  background:linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+  padding:20px; color:var(--white);
+}
+.market-hero h2 { font-size:20px; margin-bottom:4px; }
+.market-hero p { font-size:13px; color:var(--green-pale); }
+.market-search {
+  margin-top:12px; display:flex; gap:8px;
+}
+.market-search input {
+  flex:1; padding:10px 14px; border-radius:var(--radius-full);
+  border:none; font-size:14px; background:rgba(255,255,255,0.15);
+  color:var(--white); outline:none;
+}
+.market-search input::placeholder { color:rgba(255,255,255,0.5); }
+.market-search input:focus { background:rgba(255,255,255,0.25); }
+.market-search button {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--gold); color:var(--black);
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+
+.market-cats {
+  display:flex; gap:10px; padding:14px 16px; overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.market-cats::-webkit-scrollbar { display:none; }
+.market-cat {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  min-width:70px; flex-shrink:0; cursor:pointer;
+}
+.market-cat .cat-icon {
+  width:50px; height:50px; border-radius:var(--radius-md);
+  background:var(--gray-100); display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:var(--green-mid); transition:var(--transition);
+  border:2px solid transparent;
+}
+.market-cat.active .cat-icon, .market-cat:hover .cat-icon {
+  background:var(--green-pale); border-color:var(--green-mid);
+}
+.market-cat span { font-size:11px; color:var(--gray-500); text-align:center; }
+
+.market-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  padding:4px 16px 16px;
+}
+.market-item {
+  background:var(--white); border:1px solid var(--gray-100);
+  border-radius:var(--radius-md); overflow:hidden;
+  transition:var(--transition); cursor:pointer;
+}
+.market-item:hover { border-color:var(--green-light); box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.market-item .item-img {
+  height:110px; background:var(--gray-100);
+  display:flex; align-items:center; justify-content:center;
+  font-size:36px; color:var(--gray-300); position:relative;
+}
+.market-item .item-img .badge {
+  position:absolute; top:8px; left:8px;
+  padding:3px 8px; border-radius:var(--radius-full);
+  font-size:10px; font-weight:600;
+}
+.market-item .item-img .badge.govt { background:var(--green-pale); color:var(--green-mid); }
+.market-item .item-img .badge.sale { background:var(--gold-pale); color:var(--gold-deep); }
+.market-item .item-info { padding:10px 12px; }
+.market-item .item-info h5 { font-size:13px; margin-bottom:2px; line-height:1.3; }
+.market-item .item-info .item-seller { font-size:11px; color:var(--gray-400); margin-bottom:6px; }
+.market-item .item-info .item-price { font-size:16px; font-weight:700; color:var(--green-mid); font-family:'Bricolage Grotesque',sans-serif; }
+.market-item .item-info .item-price small { font-size:11px; font-weight:400; color:var(--gray-400); }
+
+.ai-rec-banner {
+  margin:12px 16px; padding:14px 16px;
+  background:linear-gradient(135deg, var(--green-pale), var(--gold-pale));
+  border-radius:var(--radius-md); border:1px solid var(--green-pale);
+}
+.ai-rec-banner .rec-label {
+  font-size:11px; font-weight:600; color:var(--green-mid);
+  margin-bottom:6px; display:flex; align-items:center; gap:6px;
+}
+.ai-rec-banner p { font-size:13px; color:var(--green-deep); line-height:1.4; }
+
+/* ============ ALERTS / MAP PAGE ============ */
+.map-container { height:300px; width:100%; position:relative; }
+.alert-filters {
+  display:flex; gap:8px; padding:12px 16px; overflow-x:auto;
+}
+.alert-filters::-webkit-scrollbar { display:none; }
+.alert-filter {
+  padding:7px 14px; border-radius:var(--radius-full);
+  font-size:12px; font-weight:500; white-space:nowrap;
+  background:var(--gray-100); color:var(--gray-500);
+  transition:var(--transition); flex-shrink:0;
+}
+.alert-filter.active { background:var(--green-deep); color:var(--gold); }
+.alert-item {
+  padding:14px 16px; border-bottom:1px solid var(--gray-100);
+  display:flex; gap:12px; align-items:flex-start;
+}
+.alert-item .alert-icon {
+  width:40px; height:40px; border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.alert-item .alert-icon.weather { background:var(--blue-soft); color:var(--blue); }
+.alert-item .alert-icon.pest { background:var(--red-soft); color:var(--red); }
+.alert-item .alert-icon.market { background:var(--gold-pale); color:var(--gold-deep); }
+.alert-item .alert-icon.govt { background:var(--green-pale); color:var(--green-mid); }
+.alert-item .alert-content { flex:1; }
+.alert-item .alert-content h5 { font-size:14px; margin-bottom:2px; }
+.alert-item .alert-content p { font-size:12px; color:var(--gray-400); line-height:1.4; }
+.alert-item .alert-time { font-size:11px; color:var(--gray-400); white-space:nowrap; }
+
+/* ============ MODALS ============ */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:200; display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; visibility:hidden; transition:var(--transition);
+}
+.modal-overlay.open { opacity:1; visibility:visible; }
+.modal-sheet {
+  background:var(--white); border-radius:var(--radius-xl) var(--radius-xl) 0 0;
+  width:100%; max-width:500px; max-height:85vh; overflow-y:auto;
+  transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  padding:20px;
+}
+.modal-overlay.open .modal-sheet { transform:translateY(0); }
+.modal-sheet .modal-handle {
+  width:36px; height:4px; border-radius:2px;
+  background:var(--gray-200); margin:0 auto 16px;
+}
+.modal-sheet h3 { font-size:20px; margin-bottom:16px; }
+
+/* Form elements */
+.form-group { margin-bottom:16px; }
+.form-group label { display:block; font-size:13px; font-weight:500; color:var(--gray-500); margin-bottom:6px; }
+.form-group input, .form-group select, .form-group textarea {
+  width:100%; padding:10px 14px; border:1px solid var(--gray-200);
+  border-radius:var(--radius-sm); font-size:14px; outline:none;
+  transition:var(--transition);
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(30,155,75,0.1);
+}
+.btn-primary {
+  width:100%; padding:13px; border-radius:var(--radius-md);
+  background:var(--green-mid); color:var(--white);
+  font-size:15px; font-weight:600; transition:var(--transition);
+}
+.btn-primary:hover { background:var(--green-light); }
+
+/* ============ RESPONSIVE DESKTOP ============ */
+@media (min-width:768px) {
+  #app { max-width:480px; margin:0 auto; box-shadow:var(--shadow-lg); border-radius:0; position:relative; }
+  body { background:var(--gray-100); display:flex; align-items:center; justify-content:center; }
+  .yard-grid { grid-template-columns:1fr 1fr; }
+  .market-grid { grid-template-columns:1fr 1fr; }
+}
+@media (min-width:1024px) {
+  #app { max-width:420px; border-radius:var(--radius-xl); overflow:hidden; height:90vh; max-height:900px; }
+}
 </style>
 </head>
 <body>
-<nav class="top-nav">
-  <a class="nswma-logo" href="#">
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="24" cy="24" r="23" fill="#fff" opacity=".12"/>
-      <circle cx="24" cy="24" r="20" fill="#fff" opacity=".08"/>
-      <path d="M10 24c1-2 3-3.5 5-4s4-.5 6-1c2-.5 3-1.5 5-2s4-.5 6 0c2 .5 3 1.5 4 3s1 3 0 4.5-3 2.5-5 3-4 .5-6 1-3 1.5-5 2c-2 .5-4 .5-5.5 0S11 28 10.5 26.5 9.5 25 10 24z" fill="#1B8C3D" opacity=".9"/>
-      <g fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 14l3-3 3 3"/><path d="M21 11v7"/>
-        <path d="M32 22l3 3-3 3"/><path d="M35 25h-7"/>
-        <path d="M18 36l-3 3-3-3"/><path d="M15 39v-7"/>
-      </g>
-      <path d="M21 11a14 14 0 0 1 14 14" fill="none" stroke="#fff" stroke-width="1.2" opacity=".4"/>
-      <path d="M35 25a14 14 0 0 1-14 14" fill="none" stroke="#fff" stroke-width="1.2" opacity=".4"/>
-      <path d="M15 39a14 14 0 0 1 0-28" fill="none" stroke="#fff" stroke-width="1.2" opacity=".4"/>
-    </svg>
-    <div class="nswma-logo-text">
-      <span class="title">NSWMA</span>
-      <span class="sub">National Solid Waste Management Authority</span>
-    </div>
-  </a>
-  <div class="nav-right">
-    <button class="nav-btn" onclick="showToast('No new notifications')"><i class="fas fa-bell"></i><div class="notif-dot"></div></button>
-    <button class="nav-btn" onclick="showToast('Settings coming soon')"><i class="fas fa-gear"></i></button>
+
+<div id="app">
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <div class="logo-mark"><i class="fa-solid fa-seedling"></i></div>
+    <h1>Yard<span>Wise</span> AI</h1>
+    <p>YUH YARD, YUH RULES</p>
+    <div class="loader"></div>
   </div>
-</nav>
-<div class="main">
-  <div class="page active" id="page-home">
-    <div class="hero">
-      <div class="badge"><i class="fas fa-shield-halved"></i> An Agency of the Government of Jamaica</div>
-      <h1>Keeping Jamaica Clean</h1>
-      <p>Track collection trucks, check your schedule, report issues, and pay bills — all from one place.</p>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="logo-sm"><i class="fa-solid fa-seedling"></i></div>
+    <div class="header-title">Yard<span>Wise</span> AI</div>
+    <div class="header-actions">
+      <button class="header-btn" onclick="toggleOffline()" title="Offline Mode"><i class="fa-solid fa-wifi"></i></button>
+      <button class="header-btn" onclick="openProfileModal()" title="Profile"><i class="fa-solid fa-user"></i></button>
     </div>
-    <div class="alert-strip"><i class="fas fa-triangle-exclamation"></i><div><strong>Schedule Update — Kingston</strong>Due to road works on Windward Road, Zone 4B collection has moved to Thursday this week.</div></div>
-    <div class="quick-grid">
-      <button class="qk" onclick="switchPage('schedule')"><div class="qk-ic" style="background:var(--blue-light);color:var(--navy)"><i class="fas fa-calendar-days"></i></div><span>Schedule</span></button>
-      <button class="qk" onclick="switchPage('track')"><div class="qk-ic" style="background:#E8F5E9;color:var(--green)"><i class="fas fa-truck"></i></div><span>Track Truck</span></button>
-      <button class="qk" onclick="switchPage('report')"><div class="qk-ic" style="background:#FFF3E0;color:#E65100"><i class="fas fa-flag"></i></div><span>Report</span></button>
-      <button class="qk" onclick="switchPage('pay')"><div class="qk-ic" style="background:#F3E5F5;color:#7B1FA2"><i class="fas fa-credit-card"></i></div><span>Pay Bill</span></button>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="ic" style="background:var(--blue-light);color:var(--navy)"><i class="fas fa-location-dot"></i></div><div><h3>Nearest Truck</h3><p>Live tracking — updated every 30 seconds</p></div></div>
-      <div class="mini-map">
-        <div class="road h" style="top:40%;left:10%;width:80%"></div><div class="road h" style="top:65%;left:5%;width:55%"></div>
-        <div class="road v" style="top:20%;left:38%;height:60%"></div><div class="road v" style="top:30%;left:68%;height:45%"></div>
-        <div class="house" style="top:25%;left:20%"><i class="fas fa-house"></i></div><div class="house" style="top:50%;left:52%"><i class="fas fa-house"></i></div>
-        <div class="house" style="top:35%;left:75%"><i class="fas fa-house"></i></div><div class="house" style="top:72%;left:28%"><i class="fas fa-house"></i></div>
-        <div class="dot on" style="top:38%;left:44%"></div><div class="dot slow" style="top:62%;left:66%"></div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="main-content">
+
+    <!-- ===== YARD CHAT ===== -->
+    <div id="chatPage" class="page active">
+      <div class="chat-mode-bar">
+        <button class="chat-mode-btn active" data-mode="ag" onclick="setChatMode('ag',this)"><i class="fa-solid fa-tractor"></i>Ag Specialist</button>
+        <button class="chat-mode-btn" data-mode="gov" onclick="setChatMode('gov',this)"><i class="fa-solid fa-landmark"></i>GovLink AI</button>
+        <button class="chat-mode-btn" data-mode="full" onclick="setChatMode('full',this)"><i class="fa-solid fa-brain"></i>Full Power</button>
       </div>
-      <div class="truck-stats">
-        <div class="ts"><div class="lb">ETA</div><div class="vl">~25 min</div></div>
-        <div class="ts"><div class="lb">Truck</div><div class="vl">KSA-047</div></div>
-        <div class="ts"><div class="lb">Zone</div><div class="vl">4B</div></div>
+      <div class="quick-actions" id="quickActions">
+        <button class="quick-chip" onclick="sendQuick('Wah pest a attack mi scotch bonnet?')"><i class="fa-solid fa-bug"></i>Pest Help</button>
+        <button class="quick-chip" onclick="sendQuick('Show mi today weather fi Clarendon')"><i class="fa-solid fa-cloud-sun"></i>Weather</button>
+        <button class="quick-chip" onclick="sendQuick('How mi register wid RADA?')"><i class="fa-solid fa-landmark"></i>RADA Info</button>
+        <button class="quick-chip" onclick="sendQuick('Wah price yam a sell fa today?')"><i class="fa-solid fa-dollar-sign"></i>Prices</button>
+        <button class="quick-chip" onclick="sendQuick('Mi banana leaf dem a turn brown')"><i class="fa-solid fa-camera"></i>Diagnose</button>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="ic" style="background:#E8F5E9;color:var(--green)"><i class="fas fa-lightbulb"></i></div><div><h3>Waste Disposal Tip</h3><p>From NSWMA public education</p></div></div>
-      <p style="font-size:.8rem;color:var(--text-muted);line-height:1.6">Properly bag, tie and place household waste in a container or receptacle for collection. Ensure the bottom of your waste container is pierced for drainage. Place waste at the front of your lot where it can be accessed by collection crews 24/7.</p>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="ic" style="background:var(--gold-light);color:var(--gold)"><i class="fas fa-phone"></i></div><div><h3>Contact NSWMA</h3><p>Head Office: 61 Half Way Tree Rd, Kingston 10</p></div></div>
-      <p style="font-size:.8rem;color:var(--text-muted);line-height:1.8"><i class="fas fa-phone" style="color:var(--navy);width:16px;font-size:11px"></i> (876) 920-7938<br><i class="fas fa-envelope" style="color:var(--navy);width:16px;font-size:11px"></i> nswma@nswma.gov.jm<br><i class="fas fa-globe" style="color:var(--navy);width:16px;font-size:11px"></i> www.nswma.gov.jm</p>
-    </div>
-  </div>
-  <div class="page" id="page-schedule">
-    <h2 style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:3px">Collection Schedule</h2>
-    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:14px">Select your parish to view the weekly schedule</p>
-    <div class="pills" id="parishSelector">
-      <button class="pill active" data-parish="kingston" onclick="selParish(this)">Kingston</button>
-      <button class="pill" data-parish="standrew" onclick="selParish(this)">St. Andrew</button>
-      <button class="pill" data-parish="stcatherine" onclick="selParish(this)">St. Catherine</button>
-      <button class="pill" data-parish="stthomas" onclick="selParish(this)">St. Thomas</button>
-      <button class="pill" data-parish="stann" onclick="selParish(this)">St. Ann</button>
-      <button class="pill" data-parish="stmary" onclick="selParish(this)">St. Mary</button>
-      <button class="pill" data-parish="portland" onclick="selParish(this)">Portland</button>
-      <button class="pill" data-parish="manchester" onclick="selParish(this)">Manchester</button>
-      <button class="pill" data-parish="clarendon" onclick="selParish(this)">Clarendon</button>
-      <button class="pill" data-parish="stelizabeth" onclick="selParish(this)">St. Elizabeth</button>
-      <button class="pill" data-parish="stjames" onclick="selParish(this)">St. James</button>
-      <button class="pill" data-parish="trelawny" onclick="selParish(this)">Trelawny</button>
-      <button class="pill" data-parish="hanover" onclick="selParish(this)">Hanover</button>
-      <button class="pill" data-parish="westmoreland" onclick="selParish(this)">Westmoreland</button>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="ic" style="background:var(--blue-light);color:var(--navy)"><i class="fas fa-building-columns"></i></div><div><h3 id="rTitle">MPM Region</h3><p id="rSub">Metropolitan Parks & Markets — Kingston, St. Andrew, St. Catherine, St. Thomas</p></div></div>
-      <div id="schedList"></div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="ic" style="background:#E8F5E9;color:var(--green)"><i class="fas fa-phone"></i></div><div><h3>Regional Office</h3><p id="rContact">MPM: (876) 754-7671 / (876) 618-2043</p></div></div>
-      <p style="font-size:.75rem;color:var(--text-muted);line-height:1.6">For urgent collection requests, contact your regional office Mon–Fri, 8:30 AM – 5:00 PM. Email: <span id="rEmail">mpmrom@nswma.gov.jm</span></p>
-    </div>
-  </div>
-  <div class="page" id="page-track">
-    <h2 style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:3px">Track Trucks</h2>
-    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:14px">Live GPS tracking of collection vehicles</p>
-    <div class="big-map">
-      <div class="road h" style="top:35%;left:8%;width:84%"></div><div class="road h" style="top:60%;left:5%;width:55%"></div>
-      <div class="road h" style="top:78%;left:35%;width:50%"></div><div class="road v" style="top:15%;left:30%;height:65%"></div>
-      <div class="road v" style="top:25%;left:62%;height:55%"></div>
-      <div class="house" style="top:20%;left:18%"><i class="fas fa-house"></i></div><div class="house" style="top:28%;left:48%"><i class="fas fa-house"></i></div>
-      <div class="house" style="top:18%;left:75%"><i class="fas fa-house"></i></div><div class="house" style="top:50%;left:20%"><i class="fas fa-house"></i></div>
-      <div class="house" style="top:68%;left:52%"><i class="fas fa-house"></i></div><div class="house" style="top:45%;left:82%"><i class="fas fa-house"></i></div>
-      <div class="map-truck" id="t1" style="top:33%;left:22%;color:var(--green)"><i class="fas fa-truck"></i></div>
-      <div class="map-truck" id="t2" style="top:58%;left:45%;color:var(--blue-accent)"><i class="fas fa-truck"></i></div>
-      <div class="map-truck" id="t3" style="top:22%;left:68%;color:var(--gold)"><i class="fas fa-truck"></i></div>
-    </div>
-    <div>
-      <div class="tl-item"><div class="st-dot on"></div><div class="inf"><h4>KSA-047 — Zone 4B</h4><p>Windward Rd → Mountain View Ave</p></div><div class="eta"><div class="t">12 min</div><div class="l">ETA</div></div></div>
-      <div class="tl-item"><div class="st-dot on"></div><div class="inf"><h4>KSA-032 — Zone 2A</h4><p>Constant Spring Rd → Manor Park</p></div><div class="eta"><div class="t">25 min</div><div class="l">ETA</div></div></div>
-      <div class="tl-item"><div class="st-dot slow"></div><div class="inf"><h4>KSA-019 — Zone 1C</h4><p>Half Way Tree → Liguanea</p></div><div class="eta"><div class="t">40 min</div><div class="l">Delayed</div></div></div>
-      <div class="tl-item"><div class="st-dot off"></div><div class="inf"><h4>KSA-055 — Zone 5A</h4><p>Off-duty — returns 6:00 AM</p></div><div class="eta"><div class="t">—</div><div class="l">Offline</div></div></div>
-    </div>
-  </div>
-  <div class="page" id="page-report">
-    <h2 style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:3px">Report an Issue</h2>
-    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:14px">Help us keep Jamaica clean</p>
-    <div class="rtype-grid">
-      <button class="rtype sel" onclick="selRT(this,'missed')"><i class="fas fa-truck" style="color:var(--danger)"></i><h4>Missed Pickup</h4><p>Truck didn't collect</p></button>
-      <button class="rtype" onclick="selRT(this,'dumping')"><i class="fas fa-dumpster" style="color:#E65100"></i><h4>Illegal Dumping</h4><p>Unauthorised disposal</p></button>
-      <button class="rtype" onclick="selRT(this,'litter')"><i class="fas fa-trash" style="color:var(--gold)"></i><h4>Littering</h4><p>Public area littering</p></button>
-      <button class="rtype" onclick="selRT(this,'other')"><i class="fas fa-circle-exclamation" style="color:var(--blue-accent)"></i><h4>Other Issue</h4><p>General complaint</p></button>
-    </div>
-    <div class="card" style="padding:18px">
-      <div class="fg"><label><i class="fas fa-location-dot" style="color:var(--navy);margin-right:3px"></i> Location</label><input class="fi" id="rLoc" placeholder="e.g. 14 Windward Rd, Kingston 2"></div>
-      <div class="fg"><label><i class="fas fa-map" style="color:var(--blue-accent);margin-right:3px"></i> Parish</label>
-        <select class="fi" id="rPar"><option value="">Select parish...</option><option>Kingston</option><option>St. Andrew</option><option>St. Catherine</option><option>St. Thomas</option><option>Portland</option><option>St. Mary</option><option>St. Ann</option><option>Trelawny</option><option>St. James</option><option>Hanover</option><option>Westmoreland</option><option>St. Elizabeth</option><option>Manchester</option><option>Clarendon</option></select>
-      </div>
-      <div class="fg"><label><i class="fas fa-pen" style="color:var(--gold);margin-right:3px"></i> Description</label><textarea class="fi" id="rDesc" placeholder="Describe the issue in detail..."></textarea></div>
-      <div class="fg">
-        <label><i class="fas fa-camera" style="color:#7B1FA2;margin-right:3px"></i> Photo / Video Evidence</label>
-        <label class="upload-box" for="rFile"><i class="fas fa-cloud-arrow-up"></i><p>Tap to upload photo or video</p><span>JPG, PNG, MP4 — max 10 MB</span></label>
-        <input type="file" id="rFile" accept="image/*,video/*" style="display:none" onchange="handleFile(this)">
-        <p id="fName" style="font-size:.72rem;color:var(--green);margin-top:5px;display:none"></p>
-        <div class="report-analysis" id="reportAnalysis"><strong><i class="fas fa-wand-magic-sparkles" style="margin-right:4px"></i>Gemini AI Analysis</strong><span id="reportAnalysisText"></span></div>
-      </div>
-      <button class="btn btn-navy" onclick="submitReport()"><i class="fas fa-paper-plane"></i> Submit Report</button>
-    </div>
-  </div>
-  <div class="page" id="page-pay">
-    <h2 style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:3px">Pay Your Bill</h2>
-    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:14px">Commercial waste collection — settle bills online</p>
-    <div class="pay-hero"><div class="lb">Amount Due</div><div class="amt">J$12,450</div><div class="acct">Account: NSWMA-COM-00847 — Due: April 30, 2026</div></div>
-    <div class="card">
-      <div class="card-head"><div class="ic" style="background:#F3E5F5;color:#7B1FA2"><i class="fas fa-wallet"></i></div><div><h3>Payment Method</h3><p>Select how you'd like to pay</p></div></div>
-      <div class="pm-row">
-        <button class="active" onclick="selPM(this)"><i class="fas fa-credit-card"></i>Card</button>
-        <button onclick="selPM(this)"><i class="fas fa-building-columns"></i>Bank</button>
-        <button onclick="selPM(this)"><i class="fas fa-mobile-screen"></i>Mobile</button>
-      </div>
-      <div class="fg"><label>Cardholder Name</label><input class="fi" placeholder="As shown on card"></div>
-      <div class="fg"><label>Card Number</label><input class="fi" placeholder="0000 0000 0000 0000" maxlength="19" oninput="fmtCard(this)"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div class="fg"><label>Expiry</label><input class="fi" placeholder="MM/YY" maxlength="5"></div>
-        <div class="fg"><label>CVV</label><input class="fi" placeholder="123" maxlength="3" type="password"></div>
-      </div>
-      <div class="fg"><label>Amount (JMD)</label><input class="fi" value="12,450.00"></div>
-      <button class="btn btn-green" onclick="doPay()" style="margin-top:6px"><i class="fas fa-lock"></i> Pay J$12,450</button>
-      <p style="font-size:.65rem;color:var(--text-light);text-align:center;margin-top:8px"><i class="fas fa-shield-halved" style="margin-right:3px"></i>Secured via GOJ e-Procurement</p>
-    </div>
-  </div>
-  <div class="chat-page" id="page-chat">
-    <div class="chat-msgs" id="chatMsgs">
-      <div class="msg bot">
-        <div class="bh"><i class="fas fa-recycle"></i> NSWMA Assistant</div>
-        Good morning! I'm the NSWMA digital assistant, powered by DeepSeek AI. I can help with collection schedules, recycling tips, reporting issues, or any waste management questions about Jamaica. You can also send me a photo for AI analysis.<br><br><em style="font-size:.7rem;color:var(--text-light)">Chat: DeepSeek &middot; Vision: Gemini 3.1 Pro</em>
-      </div>
-    </div>
-    <div class="suggestions" id="chatSugs">
-      <button class="sug" onclick="sendSug(this)">When is my next pickup?</button>
-      <button class="sug" onclick="sendSug(this)">How to recycle plastics?</button>
-      <button class="sug" onclick="sendSug(this)">Report illegal dumping</button>
-      <button class="sug" onclick="sendSug(this)">NSWMA office locations</button>
-      <button class="sug" onclick="sendSug(this)">Composting tips</button>
-      <button class="sug" onclick="sendSug(this)"><i class="fas fa-camera" style="margin-right:3px"></i>Analyze a photo</button>
-    </div>
-    <div class="powered-by"><i class="fas fa-bolt"></i> Chat powered by <strong>DeepSeek</strong> <i class="fas fa-circle" style="font-size:3px;vertical-align:middle"></i> Vision by <strong>Gemini 3.1 Pro</strong></div>
-    <div class="chat-bar">
-      <div class="chat-preview" id="chatPreview">
-        <div class="prev-wrap">
-          <img id="chatPrevImg" src="" alt="">
-          <span class="prev-name" id="chatPrevName"></span>
-          <span class="prev-rm" onclick="clearChatImage()"><i class="fas fa-xmark"></i></span>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot">
+          <div class="msg-label"><i class="fa-solid fa-seedling"></i> YardWise AI</div>
+          Wah gwaan, farmer! 🌱 Mi name YardWise — yuh smart yard companion. Ask mi anyting bout yuh crops, livestock, weather, gov programs, or market prices. Mi deh yah fi yuh!
         </div>
       </div>
-      <label class="img-btn" for="chatFileIn"><i class="fas fa-image"></i></label>
-      <input type="file" id="chatFileIn" accept="image/*" style="display:none" onchange="handleChatImage(this)">
-      <input type="text" id="chatIn" placeholder="Ask about waste management..." onkeydown="if(event.key==='Enter')sendChat()">
-      <button class="send" id="sendBtn" onclick="sendChat()"><i class="fas fa-arrow-up"></i></button>
+      <div class="chat-input-bar">
+        <button class="snap-btn" title="Snap & Solve"><i class="fa-solid fa-camera"></i></button>
+        <div class="input-wrap">
+          <textarea id="chatInput" rows="1" placeholder="Ask YardWise anyting..." onkeydown="handleChatKey(event)" oninput="autoGrow(this)"></textarea>
+        </div>
+        <button class="voice-btn" title="Voice Input"><i class="fa-solid fa-microphone"></i></button>
+        <button class="chat-send-btn" onclick="sendMessage()" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
     </div>
+
+    <!-- ===== MY YARD ===== -->
+    <div id="yardPage" class="page">
+      <div class="yard-hero">
+        <div class="yard-profile-row">
+          <div class="yard-avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="yard-profile-info">
+            <h2 id="farmerName">Set Up Yuh Yard</h2>
+            <p id="farmerParish"><i class="fa-solid fa-map-pin"></i> Tap to add yuh parish</p>
+          </div>
+        </div>
+        <div class="yard-score-card">
+          <div>
+            <div class="score-label">Yard Readiness Score</div>
+            <div class="score-val" id="yardScore">—</div>
+          </div>
+          <div>
+            <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+            <div style="font-size:11px;color:var(--gray-300);margin-top:4px;text-align:right">Complete profile to boost</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="yard-grid">
+        <div class="yard-card" onclick="openProfileModal()">
+          <div class="card-icon green"><i class="fa-solid fa-id-card"></i></div>
+          <h4>My Profile</h4>
+          <p>Farmer details, TRN, GPS location</p>
+        </div>
+        <div class="yard-card" onclick="showToast('Coming soon: Yard Records')">
+          <div class="card-icon gold"><i class="fa-solid fa-clipboard-list"></i></div>
+          <h4>Yard Records</h4>
+          <p>Log harvests, expenses, yields</p>
+        </div>
+        <div class="yard-card" onclick="showToast('Coming soon: AI Simulator')">
+          <div class="card-icon blue"><i class="fa-solid fa-chart-line"></i></div>
+          <h4>Yard Simulator</h4>
+          <p>"What if" profit & risk analysis</p>
+        </div>
+        <div class="yard-card" onclick="showToast('Coming soon: Voice Journal')">
+          <div class="card-icon red"><i class="fa-solid fa-microphone-lines"></i></div>
+          <h4>Voice Journal</h4>
+          <p>Speak updates, AI tracks trends</p>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Yuh Produce</h3>
+        <button class="see-all" onclick="showToast('Add more produce in your profile')">+ Add</button>
+      </div>
+      <div class="produce-scroll" id="produceList">
+        <div class="produce-card">
+          <div class="produce-icon"><i class="fa-solid fa-pepper-hot" style="color:#DC2626"></i></div>
+          <h5>Scotch Bonnet</h5>
+          <span>0.5 acres</span>
+        </div>
+        <div class="produce-card">
+          <div class="produce-icon"><i class="fa-solid fa-carrot" style="color:#D97706"></i></div>
+          <h5>Yams</h5>
+          <span>2 acres</span>
+        </div>
+        <div class="produce-card">
+          <div class="produce-icon"><i class="fa-solid fa-leaf" style="color:#14B8A6"></i></div>
+          <h5>Banana</h5>
+          <span>1 acre</span>
+        </div>
+        <div class="produce-card">
+          <div class="produce-icon"><i class="fa-solid fa-mug-hot" style="color:#78350F"></i></div>
+          <h5>Coffee</h5>
+          <span>0.5 acres</span>
+        </div>
+        <div class="produce-card">
+          <div class="produce-icon"><i class="fa-solid fa-circle" style="color:#7C3AED"></i></div>
+          <h5>Cocoa</h5>
+          <span>1 acre</span>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Gov Quick Links</h3>
+      </div>
+      <div class="yard-grid" style="padding-top:0">
+        <div class="yard-card" onclick="switchToChat('How mi register wid RADA right now?')">
+          <div class="card-icon green"><i class="fa-solid fa-tractor"></i></div>
+          <h4>RADA</h4>
+          <p>Register, extension, pest alerts</p>
+        </div>
+        <div class="yard-card" onclick="switchToChat('Wah grants open fi farmers right now?')">
+          <div class="card-icon gold"><i class="fa-solid fa-landmark"></i></div>
+          <h4>MOAFM</h4>
+          <p>Grants, programs, disaster relief</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COMMUNITY HUB ===== -->
+    <div id="communityPage" class="page">
+      <div class="community-banner">
+        <h2><i class="fa-solid fa-people-group"></i> Community Hub</h2>
+        <p>Connect, learn, and grow with fellow Jamaican farmers</p>
+      </div>
+      <div class="community-tabs">
+        <button class="comm-tab active" onclick="setCommTab(this,'forum')">Forum</button>
+        <button class="comm-tab" onclick="setCommTab(this,'groups')">Yard Groups</button>
+        <button class="comm-tab" onclick="setCommTab(this,'stories')">Success Stories</button>
+        <button class="comm-tab" onclick="setCommTab(this,'events')">Events</button>
+        <button class="comm-tab" onclick="setCommTab(this,'mentors')">Mentor Match</button>
+      </div>
+
+      <div id="commContent">
+        <!-- Forum Posts -->
+        <div class="forum-post">
+          <div class="post-header">
+            <div class="post-avatar">RB</div>
+            <div class="post-meta">
+              <strong>RootBoss_Rohan</strong>
+              <span>Clarendon  <i class="fa-solid fa-circle" style="font-size:4px;vertical-align:middle"></i>  2 hrs ago</span>
+            </div>
+          </div>
+          <div class="post-body">Anybody deal wid yam anthracnose dis season? Mi lose nearly 30% inna one field. Try copper spray but nah work good. Any tips?</div>
+          <div class="post-actions">
+            <button><i class="fa-solid fa-heart"></i> 12</button>
+            <button><i class="fa-solid fa-comment"></i> 8</button>
+            <button><i class="fa-solid fa-share"></i> Share</button>
+          </div>
+        </div>
+        <div class="forum-post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:var(--gold-pale);color:var(--gold-deep)">TM</div>
+            <div class="post-meta">
+              <strong>TropicalMary_StAnn</strong>
+              <span>St. Ann  <i class="fa-solid fa-circle" style="font-size:4px;vertical-align:middle"></i>  5 hrs ago</span>
+            </div>
+          </div>
+          <div class="post-body">Just harvest mi first batch a Blue Mountain coffee wid di new shade technique YardWise recommend! Yield up 22% from last year 🙌</div>
+          <div class="post-actions">
+            <button><i class="fa-solid fa-heart"></i> 34</button>
+            <button><i class="fa-solid fa-comment"></i> 15</button>
+            <button><i class="fa-solid fa-share"></i> Share</button>
+          </div>
+        </div>
+        <div class="forum-post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:var(--blue-soft);color:var(--blue)">JF</div>
+            <div class="post-meta">
+              <strong>JuniorFarmer4H</strong>
+              <span>Manchester  <i class="fa-solid fa-circle" style="font-size:4px;vertical-align:middle"></i>  1 day ago</span>
+            </div>
+          </div>
+          <div class="post-body">Who going Denbigh Show dis year? Mi 4-H group have a booth! Come check wi out. RADA say dem launching new input subsidy program there too.</div>
+          <div class="post-actions">
+            <button><i class="fa-solid fa-heart"></i> 27</button>
+            <button><i class="fa-solid fa-comment"></i> 11</button>
+            <button><i class="fa-solid fa-share"></i> Share</button>
+          </div>
+        </div>
+        <div class="forum-post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:var(--red-soft);color:var(--red)">DG</div>
+            <div class="post-meta">
+              <strong>DonG_StEliz</strong>
+              <span>St. Elizabeth  <i class="fa-solid fa-circle" style="font-size:4px;vertical-align:middle"></i>  1 day ago</span>
+            </div>
+          </div>
+          <div class="post-body">ALERT: Somebody a teef goat inna Malvern area again last night. 3 farmer report missing livestock. Watch yuh yard! Anybody know if police a investigate?</div>
+          <div class="post-actions">
+            <button><i class="fa-solid fa-heart"></i> 45</button>
+            <button><i class="fa-solid fa-comment"></i> 22</button>
+            <button><i class="fa-solid fa-share"></i> Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== YARD MARKET ===== -->
+    <div id="marketPage" class="page">
+      <div class="market-hero">
+        <h2><i class="fa-solid fa-store"></i> Yard Market</h2>
+        <p>Everything yuh yard need — delivered or pickup</p>
+        <div class="market-search">
+          <input type="text" placeholder="Search feeds, fertilizer, tools..." id="marketSearchInput" onkeydown="if(event.key==='Enter')searchMarket()">
+          <button onclick="searchMarket()"><i class="fa-solid fa-search"></i></button>
+        </div>
+      </div>
+
+      <div class="ai-rec-banner">
+        <div class="rec-label"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Recommendation</div>
+        <p>Based on yuh profile (2 acres yams + scotch bonnet inna Clarendon), yuh might need: <strong>NPK 12-24-12 fertilizer</strong> and <strong>copper fungicide</strong> fi dis season.</p>
+      </div>
+
+      <div class="market-cats">
+        <div class="market-cat active" onclick="filterMarket('all',this)">
+          <div class="cat-icon"><i class="fa-solid fa-th-large"></i></div>
+          <span>All</span>
+        </div>
+        <div class="market-cat" onclick="filterMarket('feed',this)">
+          <div class="cat-icon"><i class="fa-solid fa-wheat-awn"></i></div>
+          <span>Feeds</span>
+        </div>
+        <div class="market-cat" onclick="filterMarket('fert',this)">
+          <div class="cat-icon"><i class="fa-solid fa-flask"></i></div>
+          <span>Fertilizer</span>
+        </div>
+        <div class="market-cat" onclick="filterMarket('pest',this)">
+          <div class="cat-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+          <span>Pesticide</span>
+        </div>
+        <div class="market-cat" onclick="filterMarket('tools',this)">
+          <div class="cat-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <span>Tools</span>
+        </div>
+        <div class="market-cat" onclick="filterMarket('water',this)">
+          <div class="cat-icon"><i class="fa-solid fa-droplet"></i></div>
+          <span>Water</span>
+        </div>
+        <div class="market-cat" onclick="filterMarket('seeds',this)">
+          <div class="cat-icon"><i class="fa-solid fa-seedling"></i></div>
+          <span>Seeds</span>
+        </div>
+      </div>
+
+      <div class="section-header" style="padding-top:4px">
+        <h3>Popular Items</h3>
+        <button class="see-all">View All</button>
+      </div>
+      <div class="market-grid" id="marketGrid">
+        <div class="market-item" data-cat="feed">
+          <div class="item-img"><i class="fa-solid fa-wheat-awn"></i></div>
+          <div class="item-info">
+            <h5>Hi-Pro Chicken Feed 50kg</h5>
+            <div class="item-seller">St Jago Farm Supplies</div>
+            <div class="item-price">$4,500 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="fert">
+          <div class="item-img">
+            <i class="fa-solid fa-flask"></i>
+            <span class="badge govt"><i class="fa-solid fa-check-circle"></i> RADA</span>
+          </div>
+          <div class="item-info">
+            <h5>NPK 12-24-12 Fertilizer 25kg</h5>
+            <div class="item-seller">Green Culture JA</div>
+            <div class="item-price">$3,200 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="pest">
+          <div class="item-img"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+          <div class="item-info">
+            <h5>Copper Fungicide 1L</h5>
+            <div class="item-seller">H&L Agro</div>
+            <div class="item-price">$1,800 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="water">
+          <div class="item-img">
+            <i class="fa-solid fa-droplet"></i>
+            <span class="badge sale"><i class="fa-solid fa-tag"></i> Sale</span>
+          </div>
+          <div class="item-info">
+            <h5>1000 Gal Water Tank</h5>
+            <div class="item-seller">Waves Farms Supplies</div>
+            <div class="item-price">$42,000 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="feed">
+          <div class="item-img"><i class="fa-solid fa-wheat-awn"></i></div>
+          <div class="item-info">
+            <h5>Nutramix Goat Feed 40kg</h5>
+            <div class="item-seller">Source One Feeds</div>
+            <div class="item-price">$3,800 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="tools">
+          <div class="item-img"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="item-info">
+            <h5>Knapsack Sprayer 16L</h5>
+            <div class="item-seller">FarmLink Jamaica</div>
+            <div class="item-price">$6,500 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="seeds">
+          <div class="item-img"><i class="fa-solid fa-seedling"></i></div>
+          <div class="item-info">
+            <h5>Scotch Bonnet Seeds 100pk</h5>
+            <div class="item-seller">Green Culture JA</div>
+            <div class="item-price">$1,200 <small>JMD</small></div>
+          </div>
+        </div>
+        <div class="market-item" data-cat="tools">
+          <div class="item-img"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="item-info">
+            <h5>Machete — Collins 22"</h5>
+            <div class="item-seller">St Jago Farm Supplies</div>
+            <div class="item-price">$2,200 <small>JMD</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ALERTS / MAP ===== -->
+    <div id="alertsPage" class="page">
+      <div class="map-container" id="mapContainer"></div>
+      <div class="alert-filters">
+        <button class="alert-filter active" onclick="filterAlerts('all',this)">All Alerts</button>
+        <button class="alert-filter" onclick="filterAlerts('weather',this)"><i class="fa-solid fa-cloud"></i> Weather</button>
+        <button class="alert-filter" onclick="filterAlerts('pest',this)"><i class="fa-solid fa-bug"></i> Pests</button>
+        <button class="alert-filter" onclick="filterAlerts('market',this)"><i class="fa-solid fa-chart-bar"></i> Market</button>
+        <button class="alert-filter" onclick="filterAlerts('govt',this)"><i class="fa-solid fa-landmark"></i> Gov</button>
+      </div>
+      <div id="alertsList">
+        <div class="alert-item" data-type="weather">
+          <div class="alert-icon weather"><i class="fa-solid fa-cloud-bolt"></i></div>
+          <div class="alert-content">
+            <h5>Heavy Rain Warning — Clarendon</h5>
+            <p>Met Service issue flood watch fi low-lying areas. Secure yuh produce and drainage.</p>
+          </div>
+          <div class="alert-time">2h ago</div>
+        </div>
+        <div class="alert-item" data-type="pest">
+          <div class="alert-icon pest"><i class="fa-solid fa-bug"></i></div>
+          <div class="alert-content">
+            <h5>Fall Armyworm Outbreak — St. Ann</h5>
+            <p>RADA confirm new infestation inna corn fields. Check yuh crops and report sightings.</p>
+          </div>
+          <div class="alert-time">5h ago</div>
+        </div>
+        <div class="alert-item" data-type="market">
+          <div class="alert-icon market"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="alert-content">
+            <h5>Yam Price Increase — Coronation Market</h5>
+            <p>Yellow yam reach $350/lb, up 15% from last week. Good time fi sell!</p>
+          </div>
+          <div class="alert-time">8h ago</div>
+        </div>
+        <div class="alert-item" data-type="govt">
+          <div class="alert-icon govt"><i class="fa-solid fa-landmark"></i></div>
+          <div class="alert-content">
+            <h5>RADA Input Subsidy — Now Open</h5>
+            <p>New fertilizer and seed subsidy program open fi registered farmers. Apply through RADA portal.</p>
+          </div>
+          <div class="alert-time">1d ago</div>
+        </div>
+        <div class="alert-item" data-type="weather">
+          <div class="alert-icon weather"><i class="fa-solid fa-temperature-high"></i></div>
+          <div class="alert-content">
+            <h5>Drought Advisory — St. Elizabeth</h5>
+            <p>Extended dry spell expected. Conserve water and consider drought-resistant varieties.</p>
+          </div>
+          <div class="alert-time">1d ago</div>
+        </div>
+        <div class="alert-item" data-type="pest">
+          <div class="alert-icon pest"><i class="fa-solid fa-virus"></i></div>
+          <div class="alert-content">
+            <h5>Citrus Greening Alert — Parish-Wide</h5>
+            <p>JACRA monitoring increased citrus greening cases. Inspect yuh citrus trees fi yellowing leaves.</p>
+          </div>
+          <div class="alert-time">2d ago</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchPage('chatPage',this)">
+      <i class="fa-solid fa-comments"></i>
+      <span>Yard Chat</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('yardPage',this)">
+      <i class="fa-solid fa-house-chimney"></i>
+      <span>My Yard</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('communityPage',this)">
+      <i class="fa-solid fa-people-group"></i>
+      <span>Community</span>
+      <div class="nav-badge"></div>
+    </button>
+    <button class="nav-item" onclick="switchPage('marketPage',this)">
+      <i class="fa-solid fa-store"></i>
+      <span>Market</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('alertsPage',this)">
+      <i class="fa-solid fa-bell"></i>
+      <span>Alerts</span>
+      <div class="nav-badge"></div>
+    </button>
+  </nav>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <h3><i class="fa-solid fa-id-card" style="color:var(--green-mid)"></i> Farmer Profile</h3>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="profName" placeholder="e.g. Rohan Brown">
+    </div>
+    <div class="form-group">
+      <label>Farm Name (optional)</label>
+      <input type="text" id="profFarm" placeholder="e.g. Brown's Yard">
+    </div>
+    <div class="form-group">
+      <label>Parish</label>
+      <select id="profParish">
+        <option value="">Select yuh parish</option>
+        <option>Clarendon</option><option>Hanover</option><option>Kingston</option>
+        <option>Manchester</option><option>Portland</option><option>St. Andrew</option>
+        <option>St. Ann</option><option>St. Catherine</option><option>St. Elizabeth</option>
+        <option>St. James</option><option>St. Mary</option><option>St. Thomas</option>
+        <option>Trelawny</option><option>Westmoreland</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Farm Size (acres)</label>
+      <input type="number" id="profAcres" placeholder="e.g. 5" step="0.5">
+    </div>
+    <div class="form-group">
+      <label>Main Crops / Livestock</label>
+      <input type="text" id="profCrops" placeholder="e.g. Yams, Scotch Bonnet, Goats">
+    </div>
+    <div class="form-group">
+      <label>TRN (Tax Registration Number)</label>
+      <input type="text" id="profTRN" placeholder="Optional — fi RADA readiness">
+    </div>
+    <div class="form-group">
+      <label>RADA Registered?</label>
+      <select id="profRADA">
+        <option value="no">No — not yet</option>
+        <option value="yes">Yes — registered</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="saveProfile()" style="margin-bottom:8px"><i class="fa-solid fa-save"></i> Save Profile</button>
+    <button class="btn-primary" onclick="exportProfile()" style="background:var(--gold);color:var(--black)"><i class="fa-solid fa-file-pdf"></i> Present to RADA (PDF)</button>
+    <div style="height:20px"></div>
   </div>
 </div>
-<nav class="bottom-nav">
-  <button class="active" onclick="switchPage('home')"><i class="fas fa-house"></i>Home</button>
-  <button onclick="switchPage('schedule')"><i class="fas fa-calendar"></i>Schedule</button>
-  <button class="cta-btn" onclick="switchPage('report')"><i class="fas fa-flag"></i>Report</button>
-  <button onclick="switchPage('track')"><i class="fas fa-truck"></i>Track</button>
-  <button onclick="switchPage('chat')"><i class="fas fa-comment-dots"></i>Ask AI</button>
-</nav>
-<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastTxt"></span></div>
-<div class="modal-bg" id="modal"><div class="modal"><div class="chk"><i class="fas fa-check"></i></div><h3 id="mTitle">Success</h3><p id="mMsg"></p><button class="btn btn-navy" onclick="closeModal()" style="max-width:180px;margin:0 auto">Got It</button></div></div>
+
+<!-- TOAST -->
+<div id="toast" style="
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+  padding:10px 20px; background:var(--black-soft); color:var(--white);
+  border-radius:var(--radius-full); font-size:13px; font-weight:500;
+  opacity:0; transition:all 0.3s ease; z-index:300; pointer-events:none;
+  box-shadow:var(--shadow-lg); white-space:nowrap;
+"></div>
 
 <script>
-function switchPage(id){
-  document.querySelectorAll('.page,.chat-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
-  const btns=document.querySelectorAll('.bottom-nav button');
-  const m={home:0,schedule:1,report:2,track:3,chat:4};
-  if(m[id]!==undefined) btns[m[id]].classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+// ============ CONFIG ============
+const GEMINI_KEY = 'AIzaSyBDFeFxZxBkoH9klwfq-cqIRszrBX05aME';
+const DEEPSEEK_KEY = 'sk-28d3ff7aa364468ca395afaae80e161e';
+let chatMode = 'ag';
+let chatHistory = [];
+let mapInitialized = false;
+let leafletMap = null;
+
+// ============ SPLASH ============
+setTimeout(() => document.getElementById('splash').classList.add('hidden'), 2200);
+
+// ============ NAVIGATION ============
+function switchPage(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(pageId === 'alertsPage' && !mapInitialized) initMap();
 }
 
-const RD={
-  kingston:{r:'MPM Region',s:'Metropolitan Parks & Markets — Kingston, St. Andrew, St. Catherine, St. Thomas',c:'MPM: (876) 754-7671 / (876) 618-2043',e:'mpmrom@nswma.gov.jm'},
-  standrew:{r:'MPM Region',s:'Metropolitan Parks & Markets — Kingston, St. Andrew, St. Catherine, St. Thomas',c:'MPM: (876) 754-7671 / (876) 618-2043',e:'mpmrom@nswma.gov.jm'},
-  stcatherine:{r:'MPM Region',s:'Metropolitan Parks & Markets — Kingston, St. Andrew, St. Catherine, St. Thomas',c:'MPM: (876) 754-7671 / (876) 618-2043',e:'mpmrom@nswma.gov.jm'},
-  stthomas:{r:'MPM Region',s:'Metropolitan Parks & Markets — Kingston, St. Andrew, St. Catherine, St. Thomas',c:'MPM: (876) 754-7671 / (876) 618-2043',e:'mpmrom@nswma.gov.jm'},
-  stann:{r:'NEPM Region',s:'North Eastern Parks & Markets — St. Ann, St. Mary, Portland',c:'NEPM: (876) 974-5465 / (876) 618-2046',e:'nepmrom@nswma.gov.jm'},
-  stmary:{r:'NEPM Region',s:'North Eastern Parks & Markets — St. Ann, St. Mary, Portland',c:'NEPM: (876) 974-5465 / (876) 618-2046',e:'nepmrom@nswma.gov.jm'},
-  portland:{r:'NEPM Region',s:'North Eastern Parks & Markets — St. Ann, St. Mary, Portland',c:'NEPM: (876) 974-5465 / (876) 618-2046',e:'nepmrom@nswma.gov.jm'},
-  manchester:{r:'SPM Region',s:'Southern Parks & Markets — St. Elizabeth, Manchester, Clarendon',c:'SPM: (876) 962-3270 / (876) 618-2045',e:'spmrom@nswma.gov.jm'},
-  clarendon:{r:'SPM Region',s:'Southern Parks & Markets — St. Elizabeth, Manchester, Clarendon',c:'SPM: (876) 962-3270 / (876) 618-2045',e:'spmrom@nswma.gov.jm'},
-  stelizabeth:{r:'SPM Region',s:'Southern Parks & Markets — St. Elizabeth, Manchester, Clarendon',c:'SPM: (876) 962-3270 / (876) 618-2045',e:'spmrom@nswma.gov.jm'},
-  stjames:{r:'WPM Region',s:'Western Parks & Markets — Trelawny, St. James, Hanover, Westmoreland',c:'WPM: (876) 953-6281 / (876) 618-2044',e:'wpmrom@nswma.gov.jm'},
-  trelawny:{r:'WPM Region',s:'Western Parks & Markets — Trelawny, St. James, Hanover, Westmoreland',c:'WPM: (876) 953-6281 / (876) 618-2044',e:'wpmrom@nswma.gov.jm'},
-  hanover:{r:'WPM Region',s:'Western Parks & Markets — Trelawny, St. James, Hanover, Westmoreland',c:'WPM: (876) 953-6281 / (876) 618-2044',e:'wpmrom@nswma.gov.jm'},
-  westmoreland:{r:'WPM Region',s:'Western Parks & Markets — Trelawny, St. James, Hanover, Westmoreland',c:'WPM: (876) 953-6281 / (876) 618-2044',e:'wpmrom@nswma.gov.jm'},
-};
-const SC={
-  kingston:[{d:'Mon',z:'Zones 1A, 1B — Downtown, Parade, Rae Town',t:'6:00 AM – 2:00 PM'},{d:'Tue',z:'Zones 2A, 2B — Vineyard Town, Allman Town',t:'6:00 AM – 2:00 PM'},{d:'Wed',z:'Zones 3A, 3B — Rollington Town, Franklyn Town',t:'6:00 AM – 2:00 PM'},{d:'Thu',z:'Zones 4A, 4B — Windward Rd, Mountain View',t:'6:00 AM – 2:00 PM'},{d:'Fri',z:'Zone 5A — Tivoli, Denham Town, Trench Town',t:'6:00 AM – 12:00 PM'}],
-  standrew:[{d:'Mon',z:'Half Way Tree, Cross Roads, New Kingston',t:'6:00 AM – 2:00 PM'},{d:'Tue',z:'Liguanea, Hope Pastures, Mona',t:'6:00 AM – 2:00 PM'},{d:'Wed',z:'Constant Spring, Manor Park, Stony Hill',t:'6:00 AM – 2:00 PM'},{d:'Thu',z:'Papine, Gordon Town, August Town',t:'6:00 AM – 2:00 PM'},{d:'Fri',z:'Red Hills, Havendale, Meadowbrook',t:'6:00 AM – 12:00 PM'}],
-  stcatherine:[{d:'Mon',z:'Spanish Town — Central, St. Jago',t:'6:00 AM – 2:00 PM'},{d:'Tue',z:'Portmore — Braeton, Waterford',t:'6:00 AM – 2:00 PM'},{d:'Wed',z:'Old Harbour, Old Harbour Bay',t:'6:00 AM – 2:00 PM'},{d:'Thu',z:'Linstead, Bog Walk, Ewarton',t:'6:00 AM – 2:00 PM'},{d:'Fri',z:'Greater Portmore, Hellshire',t:'6:00 AM – 12:00 PM'}],
-  stthomas:[{d:'Mon',z:'Morant Bay — Town Centre',t:'7:00 AM – 3:00 PM'},{d:'Wed',z:'Yallahs, Bath, Port Morant',t:'7:00 AM – 3:00 PM'},{d:'Fri',z:'Seaforth, Golden Grove, Trinityville',t:'7:00 AM – 1:00 PM'}],
-  stann:[{d:'Mon',z:"Ocho Rios — Town Centre, Fern Gully",t:'6:30 AM – 2:30 PM'},{d:'Wed',z:"St. Ann's Bay, Brown's Town",t:'6:30 AM – 2:30 PM'},{d:'Fri',z:'Runaway Bay, Discovery Bay',t:'6:30 AM – 1:00 PM'}],
-  stmary:[{d:'Tue',z:'Port Maria, Highgate',t:'7:00 AM – 3:00 PM'},{d:'Thu',z:'Annotto Bay, Richmond',t:'7:00 AM – 3:00 PM'}],
-  portland:[{d:'Tue',z:'Port Antonio — Town Centre, Titchfield',t:'7:00 AM – 3:00 PM'},{d:'Thu',z:'Buff Bay, Hope Bay, Manchioneal',t:'7:00 AM – 3:00 PM'}],
-  manchester:[{d:'Mon',z:'Mandeville — Town Centre, Caledonia',t:'6:30 AM – 2:30 PM'},{d:'Wed',z:'Christiana, Spaldings',t:'6:30 AM – 2:30 PM'},{d:'Fri',z:'Porus, Williamsfield',t:'6:30 AM – 1:00 PM'}],
-  clarendon:[{d:'Tue',z:'May Pen — Town Centre',t:'6:30 AM – 2:30 PM'},{d:'Thu',z:'Chapelton, Frankfield',t:'6:30 AM – 2:30 PM'}],
-  stelizabeth:[{d:'Mon',z:'Black River — Town Centre',t:'7:00 AM – 3:00 PM'},{d:'Wed',z:'Santa Cruz, Malvern',t:'7:00 AM – 3:00 PM'},{d:'Fri',z:'Junction, Balaclava',t:'7:00 AM – 1:00 PM'}],
-  stjames:[{d:'Mon',z:'Montego Bay — Hip Strip, Sam Sharpe Sq',t:'6:00 AM – 2:00 PM'},{d:'Tue',z:'Catherine Hall, Ironshore, Rose Hall',t:'6:00 AM – 2:00 PM'},{d:'Wed',z:'Montego Bay — Norwood, Granville',t:'6:00 AM – 2:00 PM'},{d:'Thu',z:'Cambridge, Anchovy, Montpelier',t:'6:00 AM – 2:00 PM'},{d:'Fri',z:'Montego Bay — Flankers, Canterbury',t:'6:00 AM – 12:00 PM'}],
-  trelawny:[{d:'Tue',z:'Falmouth — Town Centre, Water Square',t:'7:00 AM – 3:00 PM'},{d:'Thu',z:'Clarks Town, Albert Town, Duncans',t:'7:00 AM – 3:00 PM'}],
-  hanover:[{d:'Mon',z:'Lucea — Town Centre',t:'7:00 AM – 3:00 PM'},{d:'Wed',z:'Sandy Bay, Green Island, Hopewell',t:'7:00 AM – 3:00 PM'}],
-  westmoreland:[{d:'Tue',z:'Savanna-la-Mar — Town Centre',t:'6:30 AM – 2:30 PM'},{d:'Thu',z:'Negril, Little London, Bethel Town',t:'6:30 AM – 2:30 PM'},{d:'Sat',z:'Whitehouse, Bluefields',t:'7:00 AM – 1:00 PM'}],
-};
-const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],today=dn[new Date().getDay()];
-function selParish(b){
-  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));b.classList.add('active');
-  const p=b.dataset.parish,d=RD[p];
-  document.getElementById('rTitle').textContent=d.r;
-  document.getElementById('rSub').textContent=d.s;
-  document.getElementById('rContact').textContent=d.c;
-  document.getElementById('rEmail').textContent=d.e;
-  renderSched(p);
+function switchToChat(msg) {
+  switchPage('chatPage', document.querySelector('.nav-item'));
+  setTimeout(() => {
+    document.getElementById('chatInput').value = msg;
+    sendMessage();
+  }, 300);
 }
-function renderSched(p){
-  const s=SC[p]||[],el=document.getElementById('schedList');
-  el.innerHTML=s.map(i=>{const iT=i.d===today;return '<div class="sched-row"><div class="day-box '+(iT?'today':'other')+'"><div class="dn">'+i.d+'</div></div><div class="sched-info"><h4>'+i.z+'</h4><div class="time-chip"><i class="fas fa-clock"></i> '+i.t+'</div>'+(iT?'<p style="color:var(--green);font-weight:600;margin-top:3px;font-size:.72rem"><i class="fas fa-circle" style="font-size:5px;vertical-align:middle;margin-right:3px"></i>Today</p>':'')+'</div></div>'}).join('');
-}
-renderSched('kingston');
 
-(function(){
-  var trucks=[
-    {el:document.getElementById('t1'),pos:[{t:33,l:22},{t:35,l:45},{t:33,l:60},{t:35,l:30}]},
-    {el:document.getElementById('t2'),pos:[{t:58,l:45},{t:55,l:28},{t:60,l:18},{t:58,l:40}]},
-    {el:document.getElementById('t3'),pos:[{t:22,l:68},{t:28,l:50},{t:20,l:78},{t:25,l:62}]}
-  ];
-  var i=0;
-  setInterval(function(){i=(i+1)%4;trucks.forEach(function(t){t.el.style.top=t.pos[i].t+'%';t.el.style.left=t.pos[i].l+'%'})},3500);
-})();
+// ============ CHAT ============
+function setChatMode(mode, btn) {
+  chatMode = mode;
+  document.querySelectorAll('.chat-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 
-var rType='missed';
-function selRT(b,t){document.querySelectorAll('.rtype').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');rType=t}
-
-/* ═══ Report file upload + Gemini auto-analysis ═══ */
-function handleFile(inp){
-  if(!inp.files.length) return;
-  var fn=document.getElementById('fName');
-  fn.innerHTML='<i class="fas fa-check-circle"></i> '+inp.files[0].name;
-  fn.style.display='block';
-  /* Auto-analyze with Gemini if it's an image */
-  var file=inp.files[0];
-  if(file.type.startsWith('image/')){
-    var rd=new FileReader();
-    rd.onload=function(){
-      var b64=rd.result.split(',')[1];
-      var el=document.getElementById('reportAnalysis');
-      var txt=document.getElementById('reportAnalysisText');
-      el.style.display='block';
-      txt.textContent='Analyzing image with Gemini AI...';
-      analyzeImageGemini(b64,file.type,'You are an NSWMA waste management inspector AI. Analyze this image and identify: 1) Type of waste issue (illegal dumping, littering, overflowing bin, missed collection, hazardous waste, etc.) 2) Estimated severity (low/medium/high) 3) Brief description of what you see. Keep response to 3-4 sentences. Be specific about the waste types visible.').then(function(analysis){
-        txt.textContent=analysis;
-      }).catch(function(){
-        txt.textContent='Could not analyze image. Report will still be submitted with the photo attached.';
-      });
-    };
-    rd.readAsDataURL(file);
+  const quickActions = document.getElementById('quickActions');
+  if(mode === 'gov') {
+    quickActions.innerHTML = `
+      <button class="quick-chip" onclick="sendQuick('How mi register wid RADA?')"><i class="fa-solid fa-tractor"></i>RADA Register</button>
+      <button class="quick-chip" onclick="sendQuick('Wah grants open fi farmers now?')"><i class="fa-solid fa-coins"></i>Grants</button>
+      <button class="quick-chip" onclick="sendQuick('How fi apply fi Agro Park lease?')"><i class="fa-solid fa-map"></i>Agro Parks</button>
+      <button class="quick-chip" onclick="sendQuick('Show mi MOAFM disaster relief info')"><i class="fa-solid fa-hand-holding-heart"></i>Disaster Aid</button>
+    `;
+  } else if(mode === 'full') {
+    quickActions.innerHTML = `
+      <button class="quick-chip" onclick="sendQuick('Explain drip irrigation fi small farms')"><i class="fa-solid fa-droplet"></i>Irrigation</button>
+      <button class="quick-chip" onclick="sendQuick('Best greenhouse design fi Jamaica')"><i class="fa-solid fa-house"></i>Greenhouse</button>
+      <button class="quick-chip" onclick="sendQuick('How fi start export scotch bonnet?')"><i class="fa-solid fa-plane"></i>Export</button>
+    `;
+  } else {
+    quickActions.innerHTML = `
+      <button class="quick-chip" onclick="sendQuick('Wah pest a attack mi scotch bonnet?')"><i class="fa-solid fa-bug"></i>Pest Help</button>
+      <button class="quick-chip" onclick="sendQuick('Show mi today weather fi Clarendon')"><i class="fa-solid fa-cloud-sun"></i>Weather</button>
+      <button class="quick-chip" onclick="sendQuick('How mi register wid RADA?')"><i class="fa-solid fa-landmark"></i>RADA Info</button>
+      <button class="quick-chip" onclick="sendQuick('Wah price yam a sell fa today?')"><i class="fa-solid fa-dollar-sign"></i>Prices</button>
+      <button class="quick-chip" onclick="sendQuick('Mi banana leaf dem a turn brown')"><i class="fa-solid fa-camera"></i>Diagnose</button>
+    `;
   }
 }
 
-function submitReport(){
-  if(!document.getElementById('rLoc').value||!document.getElementById('rPar').value){showToast('Please enter location and parish');return}
-  var ref='NSWMA-2026-'+String(Math.floor(Math.random()*90000+10000));
-  var labels={missed:'missed pickup',dumping:'illegal dumping',litter:'littering',other:'general issue'};
-  document.getElementById('mTitle').textContent='Report Submitted!';
-  document.getElementById('mMsg').textContent='Your '+labels[rType]+' report has been received and assigned reference #'+ref+'. We will investigate within 24-48 hours.';
-  document.getElementById('modal').classList.add('show');
+function sendQuick(msg) {
+  document.getElementById('chatInput').value = msg;
+  sendMessage();
 }
-function selPM(b){document.querySelectorAll('.pm-row button').forEach(function(x){x.classList.remove('active')});b.classList.add('active')}
-function fmtCard(i){var v=i.value.replace(/\D/g,'').substring(0,16);i.value=v.replace(/(\d{4})(?=\d)/g,'$1 ')}
-function doPay(){
-  document.getElementById('mTitle').textContent='Payment Successful!';
-  document.getElementById('mMsg').textContent='Your payment of J$12,450 has been processed. Receipt sent to registered email. Transaction ID: TXN-'+Math.floor(Math.random()*900000+100000);
-  document.getElementById('modal').classList.add('show');
+
+function handleChatKey(e) {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
-function showToast(m){var t=document.getElementById('toast');document.getElementById('toastTxt').textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
-function closeModal(){document.getElementById('modal').classList.remove('show')}
 
-/* ═══════════════════════════════════════════════════════
-   AI ENGINE
-   Chat:   DeepSeek (primary)
-   Vision: Gemini 3.1 Pro / 2.5 Flash (image analysis)
-   ═══════════════════════════════════════════════════════ */
-var DS_KEY='sk-28d3ff7aa364468ca395afaae80e161e';
-var DS_URL='https://api.deepseek.com/v1/chat/completions';
-var GEMINI_KEY='AIzaSyBDFeFxZxBkoH9klwfq-cqIRszrBX05aME';
-var GEMINI_VISION_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+GEMINI_KEY;
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
 
-var SYS_PROMPT='You are the official NSWMA (National Solid Waste Management Authority) digital assistant for Jamaica. You help Jamaican residents and businesses with waste management.\n\nKEY INFO:\n- Head Office: 61 Half Way Tree Road, Kingston 10. Tel: (876) 920-7938. Email: nswma@nswma.gov.jm\n- 4 Regional Offices:\n  MPM (Metropolitan Parks & Markets): Kingston, St. Andrew, St. Catherine, St. Thomas — (876) 754-7671 / mpmrom@nswma.gov.jm\n  NEPM (North Eastern Parks & Markets): St. Ann, St. Mary, Portland — (876) 974-5465 / nepmrom@nswma.gov.jm\n  SPM (Southern Parks & Markets): St. Elizabeth, Manchester, Clarendon — (876) 962-3270 / spmrom@nswma.gov.jm\n  WPM (Western Parks & Markets): Trelawny, St. James, Hanover, Westmoreland — (876) 953-6281 / wpmrom@nswma.gov.jm\n- Kingston & St. Andrew: collected once weekly (Mon-Fri by zone, 6AM-2PM)\n- Rural parishes: 1-3 times per week\n- Waste tips: Bag and tie waste. Pierce bottom of container. Place at front of lot.\n- Recycling programme provides biodegradable bags for plastic separation\n- Programmes: Klean Kingston, Spruce Up Jamaica, Pass the Broom, Composting\n- Users can report missed pickups, illegal dumping, littering via this app\n- Commercial clients can pay bills through the app\n\nKeep responses concise (2-4 sentences), helpful, warm. Use Jamaican context naturally. If asked outside waste management, politely redirect. You are the NSWMA digital assistant.';
+function addChatMsg(text, isUser, citations) {
+  const container = document.getElementById('chatMessages');
+  const msg = document.createElement('div');
+  msg.className = `chat-msg ${isUser ? 'user' : 'bot'}`;
+  if(isUser) {
+    msg.textContent = text;
+  } else {
+    let html = `<div class="msg-label"><i class="fa-solid fa-seedling"></i> YardWise AI</div>`;
+    html += formatBotText(text);
+    if(citations && citations.length) {
+      citations.forEach(c => {
+        html += `<a class="citation" href="${c.url}" target="_blank"><i class="fa-solid fa-link"></i> ${c.label}</a> `;
+      });
+    }
+    msg.innerHTML = html;
+  }
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+  return msg;
+}
 
-var chatHist=[];
-var pendingImage=null; /* {b64, type, name, dataUrl} */
+function formatBotText(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
 
-/* ── Chat image handling ── */
-function handleChatImage(inp){
-  if(!inp.files.length) return;
-  var file=inp.files[0];
-  var rd=new FileReader();
-  rd.onload=function(){
-    pendingImage={b64:rd.result.split(',')[1], type:file.type, name:file.name, dataUrl:rd.result};
-    document.getElementById('chatPreview').style.display='block';
-    document.getElementById('chatPrevImg').src=rd.result;
-    document.getElementById('chatPrevName').textContent=file.name;
+function showTyping() {
+  const container = document.getElementById('chatMessages');
+  const msg = document.createElement('div');
+  msg.className = 'chat-msg bot typing';
+  msg.id = 'typingIndicator';
+  msg.innerHTML = `<div class="msg-label"><i class="fa-solid fa-seedling"></i> YardWise AI</div><div class="dots"><span></span><span></span><span></span></div>`;
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingIndicator');
+  if(el) el.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  addChatMsg(text, true);
+  input.value = '';
+  input.style.height = 'auto';
+  showTyping();
+
+  // Build system prompt based on mode
+  let systemPrompt = '';
+  if(chatMode === 'ag') {
+    systemPrompt = `You are YardWise AI — the #1 AI farming companion built for Jamaican farmers. You speak naturally in Jamaican Patois/Creole mixed with English. You are an expert in:
+- Jamaican crops: yams, scotch bonnet, banana, plantain, Blue Mountain coffee, cocoa, ackee, breadfruit, callaloo, dasheen, cassava, sugarcane, citrus, coconut, pimento
+- Jamaican livestock: goats, chickens, cattle, pigs, rabbits
+- Local pests & diseases: coffee leaf rust, yam anthracnose, citrus greening, banana diseases, fall armyworm, whitefly, etc.
+- Parish-specific conditions: Clarendon, St. Elizabeth, Manchester, St. Ann, Portland, etc.
+- Affordable local remedies and inputs available in Jamaica
+- Hurricane/drought resilience for Caribbean farming
+- Market prices at Coronation Market, Papine, Linstead, local markets
+
+Always give practical, actionable advice. Use Patois naturally but make sure the info is clear. Keep answers focused and helpful. If asked about weather, give parish-specific guidance. Reference RADA, MOAFM, JACRA when relevant.
+
+The farmer's profile: They have crops including scotch bonnet (0.5 acres), yams (2 acres), banana (1 acre), coffee (0.5 acres), cocoa (1 acre). Located in Clarendon parish.`;
+  } else if(chatMode === 'gov') {
+    systemPrompt = `You are YardWise AI in GovLink mode — helping Jamaican farmers navigate government agricultural programs and agencies. You speak in Jamaican Patois/Creole mixed with English.
+
+Key agencies you know about:
+- RADA (Rural Agricultural Development Authority) — rada.gov.jm — farmer registration, extension, pest alerts, tractor service, publications
+- MOAFM (Ministry of Agriculture, Fisheries and Mining) — moa.gov.jm — grants, disaster relief, food security programs
+- JAS (Jamaica Agricultural Society) — produce inspection, incentives
+- AIC (Agro-Investment Corporation) — agroinvest.gov.jm — Agro Park land leasing
+- NIC (National Irrigation Commission) — irrigation infrastructure
+- JACRA — commodity regulation
+- Banana Board, Coconut Industry Board, Sugar Industry Authority
+- Jamaica 4-H Clubs — youth agriculture
+- JDDB — dairy development
+- National Fisheries Authority
+- Plant Quarantine, Produce Inspection divisions
+
+Always cite the relevant agency and website. Guide farmers step-by-step through processes. Explain how to register, apply for grants, access subsidies, or get help. If you don't know the exact current status, say so honestly and suggest they contact the agency directly.`;
+  } else {
+    systemPrompt = `You are YardWise AI in Full Power mode. You are as smart and capable as any top AI assistant. You speak in Jamaican Patois/Creole mixed with English, but you can answer ANY question — farming, construction, business, technology, health, education, anything.
+
+You specialize in:
+- Jamaican agriculture and rural life
+- Rural construction (greenhouses, irrigation systems, farm roads, storage facilities)
+- Small business and farming enterprise
+- Caribbean climate and environment
+- But you can handle any topic the user asks about
+
+Be thorough, accurate, and helpful. Use Patois naturally but keep information clear and accessible.`;
+  }
+
+  // Build messages
+  const messages = [];
+  chatHistory.push({ role: 'user', content: text });
+  // Keep last 10 exchanges
+  const recent = chatHistory.slice(-20);
+  recent.forEach(m => messages.push(m));
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: messages.map(m => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: m.content }]
+        }))
+      })
+    });
+
+    const data = await response.json();
+    removeTyping();
+
+    if(data.candidates && data.candidates[0]) {
+      const reply = data.candidates[0].content.parts[0].text;
+      chatHistory.push({ role: 'assistant', content: reply });
+      addChatMsg(reply, false);
+    } else {
+      // Fallback to DeepSeek
+      await fallbackDeepSeek(systemPrompt, messages);
+    }
+  } catch(err) {
+    console.error('Gemini error:', err);
+    removeTyping();
+    // Try DeepSeek fallback
+    try {
+      await fallbackDeepSeek(systemPrompt, messages);
+    } catch(e2) {
+      removeTyping();
+      addChatMsg('Sorry, mi cyaan connect right now. Check yuh internet and try again, or use di offline tips below.', false);
+    }
+  }
+}
+
+async function fallbackDeepSeek(systemPrompt, messages) {
+  try {
+    const dsMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages
+    ];
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: dsMessages,
+        max_tokens: 1024
+      })
+    });
+    const data = await response.json();
+    removeTyping();
+    if(data.choices && data.choices[0]) {
+      const reply = data.choices[0].message.content;
+      chatHistory.push({ role: 'assistant', content: reply });
+      addChatMsg(reply, false);
+    } else {
+      addChatMsg('Hmm, both AI services down right now. Try again inna likkle bit!', false);
+    }
+  } catch(e) {
+    removeTyping();
+    addChatMsg('Connection issue — make sure yuh have internet. Offline mode coming soon!', false);
+  }
+}
+
+// ============ PROFILE ============
+function openProfileModal() {
+  document.getElementById('profileModal').classList.add('open');
+  // Load saved data
+  const prof = JSON.parse(localStorage.getItem('yw_profile') || '{}');
+  if(prof.name) document.getElementById('profName').value = prof.name;
+  if(prof.farm) document.getElementById('profFarm').value = prof.farm;
+  if(prof.parish) document.getElementById('profParish').value = prof.parish;
+  if(prof.acres) document.getElementById('profAcres').value = prof.acres;
+  if(prof.crops) document.getElementById('profCrops').value = prof.crops;
+  if(prof.trn) document.getElementById('profTRN').value = prof.trn;
+  if(prof.rada) document.getElementById('profRADA').value = prof.rada;
+}
+
+document.getElementById('profileModal').addEventListener('click', function(e) {
+  if(e.target === this) this.classList.remove('open');
+});
+
+function saveProfile() {
+  const prof = {
+    name: document.getElementById('profName').value,
+    farm: document.getElementById('profFarm').value,
+    parish: document.getElementById('profParish').value,
+    acres: document.getElementById('profAcres').value,
+    crops: document.getElementById('profCrops').value,
+    trn: document.getElementById('profTRN').value,
+    rada: document.getElementById('profRADA').value
   };
-  rd.readAsDataURL(file);
-  inp.value='';
-}
-function clearChatImage(){
-  pendingImage=null;
-  document.getElementById('chatPreview').style.display='none';
+  localStorage.setItem('yw_profile', JSON.stringify(prof));
+  updateProfileDisplay(prof);
+  document.getElementById('profileModal').classList.remove('open');
+  showToast('Profile saved!');
 }
 
-/* ── Gemini Vision API ── */
-function analyzeImageGemini(b64,mimeType,prompt){
-  return fetch(GEMINI_VISION_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      contents:[{
-        parts:[
-          {text:prompt},
-          {inlineData:{mimeType:mimeType,data:b64}}
-        ]
-      }],
-      generationConfig:{maxOutputTokens:400,temperature:0.5}
-    })
-  }).then(function(res){
-    if(!res.ok) throw new Error('Gemini Vision HTTP '+res.status);
-    return res.json();
-  }).then(function(data){
-    if(data.candidates && data.candidates[0] && data.candidates[0].content){
-      return data.candidates[0].content.parts.map(function(p){return p.text||''}).join('');
-    }
-    throw new Error('No Gemini vision response');
-  });
+function updateProfileDisplay(prof) {
+  if(prof.name) document.getElementById('farmerName').textContent = prof.name;
+  if(prof.parish) document.getElementById('farmerParish').innerHTML = `<i class="fa-solid fa-map-pin"></i> ${prof.parish}, Jamaica`;
+  // Calculate score
+  let score = 0;
+  if(prof.name) score += 15;
+  if(prof.parish) score += 15;
+  if(prof.acres) score += 15;
+  if(prof.crops) score += 20;
+  if(prof.trn) score += 15;
+  if(prof.rada === 'yes') score += 20;
+  document.getElementById('yardScore').textContent = score + '%';
+  document.getElementById('scoreFill').style.width = score + '%';
 }
 
-/* ── DeepSeek Chat API ── */
-function callDeepSeek(userMsg){
-  var messages=[{role:'system',content:SYS_PROMPT}];
-  chatHist.forEach(function(m){
-    messages.push({role:m.role==='assistant'?'assistant':'user',content:m.text});
-  });
-  messages.push({role:'user',content:userMsg});
+function exportProfile() {
+  const prof = JSON.parse(localStorage.getItem('yw_profile') || '{}');
+  if(!prof.name) { showToast('Fill in yuh profile first!'); return; }
+  // Generate a simple text report (PDF generation would need a library)
+  const report = `
+═══════════════════════════════════════
+    YARDWISE AI — FARMER PROFILE REPORT
+    Prepared for RADA Presentation
+═══════════════════════════════════════
 
-  return fetch(DS_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
-    body:JSON.stringify({model:'deepseek-chat',messages:messages,max_tokens:500,temperature:0.7,stream:false})
-  }).then(function(res){
-    if(!res.ok) throw new Error('DeepSeek HTTP '+res.status);
-    return res.json();
-  }).then(function(data){
-    if(data.choices && data.choices[0]) return data.choices[0].message.content;
-    throw new Error('No DeepSeek response');
-  });
+Farmer Name: ${prof.name || 'N/A'}
+Farm Name: ${prof.farm || 'N/A'}
+Parish: ${prof.parish || 'N/A'}
+Farm Size: ${prof.acres || 'N/A'} acres
+Main Crops/Livestock: ${prof.crops || 'N/A'}
+TRN: ${prof.trn || 'Not provided'}
+RADA Registered: ${prof.rada === 'yes' ? 'Yes' : 'No'}
+
+─────────────────────────────────────
+Yard Readiness Assessment:
+This farmer profile has been verified through
+YardWise AI. ${prof.rada !== 'yes' ? 'This farmer is not yet registered with RADA and is seeking formal registration and support.' : 'This farmer is registered with RADA.'}
+
+Generated: ${new Date().toLocaleDateString('en-JM')}
+Powered by YardWise AI — yardwise.ai
+═══════════════════════════════════════`;
+
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `YardWise_Profile_${prof.name?.replace(/\s+/g,'_') || 'Farmer'}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Profile report downloaded!');
 }
 
-/* ── Fallback: Gemini as text chat if DeepSeek fails ── */
-function callGeminiChat(userMsg){
-  var GEMINI_CHAT_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+GEMINI_KEY;
-  var contents=[];
-  chatHist.forEach(function(m){
-    contents.push({role:m.role==='user'?'user':'model',parts:[{text:m.text}]});
-  });
-  contents.push({role:'user',parts:[{text:userMsg}]});
+// Load profile on startup
+const savedProf = JSON.parse(localStorage.getItem('yw_profile') || '{}');
+if(savedProf.name) updateProfileDisplay(savedProf);
 
-  return fetch(GEMINI_CHAT_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      systemInstruction:{parts:[{text:SYS_PROMPT}]},
-      contents:contents,
-      generationConfig:{maxOutputTokens:500,temperature:0.7}
-    })
-  }).then(function(res){
-    if(!res.ok) throw new Error('Gemini Chat HTTP '+res.status);
-    return res.json();
-  }).then(function(data){
-    if(data.candidates && data.candidates[0] && data.candidates[0].content){
-      return data.candidates[0].content.parts.map(function(p){return p.text||''}).join('');
-    }
-    throw new Error('No Gemini chat response');
-  });
-}
+// ============ MAP ============
+function initMap() {
+  mapInitialized = true;
+  setTimeout(() => {
+    leafletMap = L.map('mapContainer').setView([18.1096, -77.2975], 8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(leafletMap);
 
-/* ── Main send function ── */
-function sendChat(){
-  var inp=document.getElementById('chatIn');
-  var msg=inp.value.trim();
-  var hasImage=!!pendingImage;
-  if(!msg && !hasImage) return;
-  inp.value='';
-  document.getElementById('chatSugs').style.display='none';
-
-  /* Show user message (with image if present) */
-  if(hasImage){
-    addMsgWithImage('user', msg||'Analyze this image', pendingImage.dataUrl);
-  } else {
-    addMsg('user',msg);
-  }
-
-  var typEl=addTyping();
-  document.getElementById('sendBtn').disabled=true;
-
-  if(hasImage){
-    /* Image flow: Gemini analyzes image → DeepSeek responds with context */
-    var imgData=pendingImage;
-    clearChatImage();
-    var visionPrompt='Analyze this image in the context of waste management in Jamaica (NSWMA). Describe what you see: waste type, condition, any issues like illegal dumping or littering. Be specific and concise (3-4 sentences).';
-    if(msg) visionPrompt=msg+'\n\nAnalyze this image in context of NSWMA waste management.';
-
-    analyzeImageGemini(imgData.b64, imgData.type, visionPrompt).then(function(analysis){
-      /* Now send analysis to DeepSeek for conversational response */
-      var contextMsg=(msg||'The user sent an image.')+'\n\n[Gemini Vision Analysis]: '+analysis;
-      chatHist.push({role:'user',text:contextMsg});
-      return callDeepSeek(contextMsg);
-    }).then(function(reply){
-      typEl.remove();
-      chatHist.push({role:'assistant',text:reply});
-      addMsg('bot',reply);
-      document.getElementById('sendBtn').disabled=false;
-    }).catch(function(err){
-      console.error('Image analysis flow failed:',err);
-      typEl.remove();
-      /* Try Gemini-only fallback for image */
-      var fb='I analyzed your image but had trouble processing the full response. Please try again, or use the Report page to submit the photo directly with your location details. You can also contact NSWMA at (876) 920-7938.';
-      addMsg('bot',fb);
-      document.getElementById('sendBtn').disabled=false;
+    // Add sample markers
+    const markers = [
+      { lat:18.0179, lng:-77.0082, label:'RADA Office — Clarendon', icon:'tractor' },
+      { lat:18.2090, lng:-77.8876, label:'Agro Park — St. Elizabeth', icon:'seedling' },
+      { lat:18.4100, lng:-77.2738, label:'RADA Office — St. Ann', icon:'tractor' },
+      { lat:18.0426, lng:-76.8020, label:'Coronation Market — Kingston', icon:'store' },
+      { lat:18.1812, lng:-77.5072, label:'Pest Alert Zone — Manchester', icon:'bug', color:'red' },
+    ];
+    markers.forEach(m => {
+      const color = m.color || '#14B8A6';
+      const marker = L.circleMarker([m.lat, m.lng], {
+        radius:8, fillColor:color, color:'#fff', weight:2, fillOpacity:0.8
+      }).addTo(leafletMap);
+      marker.bindPopup(`<strong>${m.label}</strong>`);
     });
-  } else {
-    /* Text-only flow: DeepSeek primary → Gemini fallback */
-    chatHist.push({role:'user',text:msg});
-    callDeepSeek(msg).then(function(reply){
-      typEl.remove();
-      chatHist.push({role:'assistant',text:reply});
-      addMsg('bot',reply);
-      document.getElementById('sendBtn').disabled=false;
-    }).catch(function(e1){
-      console.warn('DeepSeek failed, falling back to Gemini...',e1);
-      callGeminiChat(msg).then(function(reply){
-        typEl.remove();
-        chatHist.push({role:'assistant',text:reply});
-        addMsg('bot',reply);
-        document.getElementById('sendBtn').disabled=false;
-      }).catch(function(e2){
-        console.error('Both APIs failed',e2);
-        typEl.remove();
-        var fallback="I'm having trouble connecting right now. Please try again, or contact NSWMA directly at (876) 920-7938 or nswma@nswma.gov.jm.";
-        chatHist.push({role:'assistant',text:fallback});
-        addMsg('bot',fallback);
-        document.getElementById('sendBtn').disabled=false;
-      });
-    });
+
+    leafletMap.invalidateSize();
+  }, 100);
+}
+
+// ============ MARKET ============
+function filterMarket(cat, btn) {
+  document.querySelectorAll('.market-cat').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.market-item').forEach(item => {
+    if(cat === 'all' || item.dataset.cat === cat) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+function searchMarket() {
+  const q = document.getElementById('marketSearchInput').value.toLowerCase();
+  document.querySelectorAll('.market-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+// ============ COMMUNITY ============
+function setCommTab(btn, tab) {
+  document.querySelectorAll('.comm-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const content = document.getElementById('commContent');
+  if(tab === 'forum') {
+    // Already showing forum posts
+    content.querySelectorAll('.forum-post').forEach(p => p.style.display = '');
+  } else if(tab === 'groups') {
+    showToast('Yard Groups coming soon — join parish farming circles!');
+  } else if(tab === 'stories') {
+    showToast('Success Stories coming soon — share yuh wins!');
+  } else if(tab === 'events') {
+    showToast('Events calendar coming soon — Denbigh Show & more!');
+  } else if(tab === 'mentors') {
+    showToast('Mentor Match coming soon — connect wid experienced farmers!');
   }
 }
 
-function sendSug(b){document.getElementById('chatIn').value=b.textContent.replace(/^.*?(?=\w)/,'');sendChat()}
-function addMsg(type,text){
-  var c=document.getElementById('chatMsgs'),d=document.createElement('div');
-  d.className='msg '+type;
-  if(type==='bot') d.innerHTML='<div class="bh"><i class="fas fa-recycle"></i> NSWMA Assistant</div>'+fmtBot(text);
-  else d.textContent=text;
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
+// ============ ALERTS ============
+function filterAlerts(type, btn) {
+  document.querySelectorAll('.alert-filter').forEach(f => f.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.alert-item').forEach(item => {
+    if(type === 'all' || item.dataset.type === type) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  });
 }
-function addMsgWithImage(type,text,imgSrc){
-  var c=document.getElementById('chatMsgs'),d=document.createElement('div');
-  d.className='msg '+type;
-  d.innerHTML='<img class="user-img" src="'+imgSrc+'" alt="Uploaded">'+(text?'<div>'+text+'</div>':'');
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
+
+// ============ UTILITIES ============
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2500);
 }
-function fmtBot(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}
-function addTyping(){
-  var c=document.getElementById('chatMsgs'),d=document.createElement('div');
-  d.className='msg bot';
-  d.innerHTML='<div class="bh"><i class="fas fa-recycle"></i> NSWMA Assistant</div><div class="typing"><span></span><span></span><span></span></div>';
-  c.appendChild(d);c.scrollTop=c.scrollHeight;return d;
+
+function toggleOffline() {
+  showToast('Offline mode — cached data available');
 }
 </script>
 </body>
